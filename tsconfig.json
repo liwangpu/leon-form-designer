@@ -19,7 +19,13 @@
             ],
             "form-data-center": [
                 "projects/form-data-center/src/public-api.ts",
-            ]
+            ],
+            "form-designer": [
+                "projects/form-designer/src/public-api.ts",
+            ],
+            "form-designer/*": [
+              "projects/form-designer/*",
+          ]
         },
         "noFallthroughCasesInSwitch": true,
         "sourceMap": true,

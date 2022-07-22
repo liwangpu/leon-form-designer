@@ -1,12 +1,12 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'qflow-dynamic-form',
-  templateUrl: './dynamic-form.component.html',
-  styleUrls: ['./dynamic-form.component.scss'],
+  selector: 'qflow-form-designer',
+  templateUrl: './designer.component.html',
+  styleUrls: ['./designer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DynamicFormComponent implements OnInit {
+export class DesignerComponent implements OnInit {
 
   constructor() { }
 
