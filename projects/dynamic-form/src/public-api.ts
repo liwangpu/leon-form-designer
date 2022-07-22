@@ -1,2 +1,1 @@
-// tokens
-export * from './tokens/form-field-registry';
+export * from './form.module';
