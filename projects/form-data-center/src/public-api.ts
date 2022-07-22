@@ -1,3 +1,3 @@
 export * from './form-data-center.module';
-export * from './store';
+export * from './data-center-state';
 export * from './form-data';

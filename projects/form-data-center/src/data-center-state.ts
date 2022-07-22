@@ -7,4 +7,8 @@ export interface FormDataCenterState {
     data: IFormDataState
 }
 
-export const selectFormDataCenter = createFeatureSelector<any, FormDataCenterState>(formDataCenterStateKey);
+export const selectFormDataCenter = createFeatureSelector<FormDataCenterState>(formDataCenterStateKey);
+
+export const DATA_CENTER_INITIAL_STATE: FormDataCenterState = {
+    data: {}
+};

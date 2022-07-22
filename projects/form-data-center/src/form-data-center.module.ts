@@ -1,18 +1,11 @@
 import { NgModule } from '@angular/core';
-import { combineReducers, StoreModule } from '@ngrx/store';
-import { } from './form-data';
-import { formDataReducer } from './form-data/reducer';
-import { formDataCenterStateKey } from './store';
-// import * as fromState from './states';
-
-
-const stateReducer = combineReducers({
-    data: formDataReducer
-})
+import { StoreModule } from '@ngrx/store';
+import { formDataCenterStateKey } from './data-center-state';
+import { dataCenterReducer } from './data-center-reducer';
 
 @NgModule({
     imports: [
-        StoreModule.forFeature(formDataCenterStateKey, stateReducer)
+        StoreModule.forFeature(formDataCenterStateKey, dataCenterReducer)
     ]
 })
 export class FormDataCenterModule { }
