@@ -41,7 +41,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "projects/form-designer/resources/form-designer.scss"
             ],
             "scripts": []
           },

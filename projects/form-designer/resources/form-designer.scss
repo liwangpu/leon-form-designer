@@ -1,0 +1,17 @@
+div.form-designer-optional-component {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #e6eaf0;
+  border-radius: 4px;
+  height: 36px;
+  font-size: 13px;
+  background-color: #fff;
+  cursor: grab;
+
+  &:hover {
+    border-color: #ccd4e0;
+    color: #121315;
+    background-color: #F4F6F9;
+  }
+}
