@@ -2,16 +2,16 @@
   display: flex;
   width: 100%;
   height: 100%;
-  background-color: #F9FAFC;
-  padding: 12px;
+  background-color: #fff;
+  // padding: 12px;
 
   .optional-component-panel {
     width: 276px;
-    background-color: #fff;
   }
 
   .page-presentaion {
     flex: 1;
-    padding: 0 20px;
+    padding: 20px 30px;
+    background-color: #FAFBFC;
   }
 }

@@ -1,50 +1,51 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
-    "compileOnSave": false,
-    "compilerOptions": {
-        "baseUrl": "./",
-        "outDir": "./dist/out-tsc",
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "noImplicitReturns": true,
-        "paths": {
-            "dynamic-form": [
-                "projects/dynamic-form/src",
-            ],
-            "dynamic-form/*": [
-                "projects/dynamic-form/*",
-            ],
-            "form-control": [
-                "projects/form-control/src/public-api.ts",
-            ],
-            "form-data-center": [
-                "projects/form-data-center/src/public-api.ts",
-            ],
-            "form-designer": [
-                "projects/form-designer/src/public-api.ts",
-            ],
-            "form-designer/*": [
-              "projects/form-designer/*",
-          ]
-        },
-        "noFallthroughCasesInSwitch": true,
-        "sourceMap": true,
-        "declaration": false,
-        "downlevelIteration": true,
-        "experimentalDecorators": true,
-        "moduleResolution": "node",
-        "importHelpers": true,
-        "target": "es2017",
-        "module": "es2020",
-        "lib": [
-            "es2018",
-            "dom"
-        ]
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2017",
+    "module": "es2020",
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "paths": {
+      "dynamic-form": [
+        "projects/dynamic-form/src",
+      ],
+      "dynamic-form/*": [
+        "projects/dynamic-form/*",
+      ],
+      "form-control": [
+        "projects/form-control/src/public-api.ts",
+      ],
+      "form-data-center": [
+        "projects/form-data-center/src/public-api.ts",
+      ],
+      "form-designer": [
+        "projects/form-designer/src/public-api.ts",
+      ],
+      "form-designer/*": [
+        "projects/form-designer/*",
+      ]
     },
-    "angularCompilerOptions": {
-        "enableI18nLegacyMessageIdFormat": false,
-        "strictInjectionParameters": true,
-        "strictInputAccessModifiers": true,
-        "strictTemplates": true
-    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
 }
