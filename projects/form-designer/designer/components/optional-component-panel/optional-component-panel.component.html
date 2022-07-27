@@ -1,17 +1,17 @@
-<div class="optional-list">
+<div class="optional-list" cdkDropListGroup>
   <ng-container *ngFor="let g of componentGroups">
     <ng-container *ngTemplateOutlet="groupTpl;context:{$implicit:g}"></ng-container>
   </ng-container>
 </div>
-
 
 <ng-template #groupTpl let-group>
   <div class="optional-group">
     <div class="header">
       <p class="title">{{group.title}}</p>
     </div>
-    <div class="content" cdkDropList>
-      <div class="form-designer-optional-component" *ngFor="let c of group?.components" cdkDrag>
+    <div class="content" cdkDropList id="default-1" [cdkDropListSortingDisabled]="true" [cdkDropListConnectedTo]="dropContainers">
+      <div class="form-designer-optional-component" *ngFor="let c of group?.components" cdkDrag
+        (cdkDragMoved)="onDraging($event)" (cdkDragReleased)="onRelease($event)">
         <p class="title">{{c.title}}</p>
       </div>
     </div>

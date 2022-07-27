@@ -1,7 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import * as _ from 'lodash';
 import * as faker from 'faker';
-import Sortable from 'sortablejs';
+import { v4 as uuidv4 } from 'uuid';
+import { DropContainerOpsatService } from '../../services/drop-container-opsat.service';
+import { DropContainer } from '../../models/drop-container';
+import { SubSink } from 'subsink';
 
 @Component({
   selector: 'qflow-form-designer-drop-container',
@@ -9,57 +12,33 @@ import Sortable from 'sortablejs';
   styleUrls: ['./drop-container.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DropContainerComponent implements OnInit, OnDestroy {
+export class DropContainerComponent implements DropContainer, OnInit, OnDestroy {
 
   @HostBinding('attr.qflow-designer-drop-container')
-  public key?: string;
-
-  @ViewChild('container', { static: true })
-  private container!: ElementRef
+  readonly key: string;
+  @HostBinding('class.actived')
+  actived?: boolean;
+  private container!: ElementRef;
+  private subs = new SubSink();
   constructor(
-
+    private opsat: DropContainerOpsatService,
+    private cdr: ChangeDetectorRef
   ) {
-    this.key = faker.datatype.uuid();
+    this.key = uuidv4();
   }
 
-  public ngOnDestroy(): void {
-
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+    this.opsat.deRegistryContainer(this.key);
   }
 
-  public ngOnInit(): void {
-    console.log('title:', this.container.nativeElement);
-    new Sortable(this.container.nativeElement, {
-      group: {
-        name: 'form-designer',
-      },
-      ghostClass: "sortable-ghost", 
-      sort: false,
-      animation: 150,
-      onEnd(evt) {
-        console.log('onEnd:', evt);
-      },
-      onAdd: function (/**Event*/evt) {
-        console.log('add:', evt);
-      },
-      onChoose: function (/**Event*/evt) {
-        console.log('onChoose:', evt);
-      },
-      onUnchoose: function(/**Event*/evt) {
-        console.log('onUnchoose:', evt);
-      },
-      onUpdate: function (/**Event*/evt) {
-        console.log('onUpdate:', evt);
-      },
-      onMove: function (/**Event*/evt) {
-        console.log('onUpdate:', evt);
-      },
-      onChange: function(/**Event*/evt) {
-        console.log('onChange:', evt);
-      },
-      onRemove: function (/**Event*/evt) {
-        console.log('onRemove:', evt);
-      },
-    });
+  ngOnInit(): void {
+    this.opsat.registryContainer(this.key, this);
+    this.subs.sink = this.opsat.activeContainer$
+      .subscribe(key => {
+        this.actived = this.key === key;
+        this.cdr.markForCheck();
+      });
   }
 
 }

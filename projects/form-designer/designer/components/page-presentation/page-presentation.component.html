@@ -1,4 +1,6 @@
-<!-- <qflow-form-designer-drop-container></qflow-form-designer-drop-container> -->
-<div class="components" cdkDropList>
+<qflow-form-designer-drop-container class="drop-container" #container>
+  <div class="components" cdkDropList [id]="container.key" (cdkDropListDropped)="drop($event)"
+    [cdkDropListConnectedTo]="['default-1']">
 
-</div>
+  </div>
+</qflow-form-designer-drop-container>

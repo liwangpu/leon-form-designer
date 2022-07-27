@@ -1,17 +1,9 @@
 :host {
   display: block;
+  border: 1px dashed #cacdd1;
+  background-color: #FAFBFC;
 
-  &>.drop-container {
-    display: flex;
-    flex-flow: column;
-    width: 100%;
-    height: 100%;
-    background-color: pink;
-    border: 1px solid transparent;
-    min-height: 200px;
-
-    &.active {
-      border-color: gray;
-    }
+  &.actived {
+    border-color: #FB9337;
   }
 }

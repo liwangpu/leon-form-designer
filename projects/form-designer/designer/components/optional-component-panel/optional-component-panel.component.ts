@@ -1,11 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { OptionalComponentGroup } from '../../models';
 import * as faker from 'faker';
-import { CdkDragMove } from '@angular/cdk/drag-drop';
+import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 import { Subject } from 'rxjs';
 import { SubSink } from 'subsink';
 import { distinctUntilChanged } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { DropContainerOpsatService } from 'form-designer/drop-container';
 
 @Component({
   selector: 'qflow-form-designer-optional-component-panel',
@@ -15,16 +16,20 @@ import * as _ from 'lodash';
 })
 export class OptionalComponentPanelComponent implements OnInit, OnDestroy {
 
-  public componentGroups?: OptionalComponentGroup[];
+  componentGroups?: OptionalComponentGroup[];
+  dropContainers: string[] = [];
   private draging$ = new Subject<CdkDragMove<any>>();
   private subs = new SubSink();
-  public constructor() { }
+  constructor(
+    private opsat: DropContainerOpsatService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-  public ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
 
-  public ngOnInit(): void {
+  ngOnInit(): void {
     // this.componentGroups = [];
     // for (let i = 0; i < 10; i++) {
     //     const components = [];
@@ -70,51 +75,57 @@ export class OptionalComponentPanelComponent implements OnInit, OnDestroy {
           }
         ]
       },
-      {
-        title: '容器',
-        components: [
-          {
-            type: 'tab',
-            title: '选项卡'
-          },
-          {
-            type: 'split',
-            title: '分栏面板'
-          }
-        ]
-      }
+      // {
+      //   title: '容器',
+      //   components: [
+      //     {
+      //       type: 'tab',
+      //       title: '选项卡'
+      //     },
+      //     {
+      //       type: 'split',
+      //       title: '分栏面板'
+      //     }
+      //   ]
+      // }
     ];
 
+    this.subs.sink = this.opsat.containers$
+      .subscribe(keys => {
+        this.dropContainers = keys;
+        console.log('container:', keys);
+        // this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      });
+
     this.subs.sink = this.draging$
-      // .pipe(debounceTime(80))
       .pipe(distinctUntilChanged((pre, cur) => _.isEqual(pre.event.target, cur.event.target)))
       .subscribe(it => {
-        console.log('item:', it);
-        // const evt: HTMLElement = it.event.target as any;
         const ps = (it.event as MouseEvent).composedPath();
-        let containerDom: HTMLElement | null = null;
+        let containerKey: string | null = null;
         for (let i = 0; i < ps.length - 1; i++) {
           const e: HTMLElement = ps[i] as any;
           if (typeof e.getAttribute === 'function') {
             // containerDom = e;
             const key = e.getAttribute('qflow-designer-drop-container');
             if (key) {
-              console.log('key:', key);
+              containerKey = key;
               break;
             }
           }
         }
-        // // console.log('path:', Array.isArray(ps));
-        // console.log('containerDom:', containerDom);
-        // evt.getAttribute('isDropContainer');
-        // it.event.target.p
-        // console.log('item:', (it.event.target as any)['isDropContainer']);
-        // console.log('item:', (it.event.target as any).getAttribute('drop-container'));
+        if (containerKey) {
+          this.opsat.activeContainer(containerKey);
+        }
       });
   }
 
-  public onDraging(item: CdkDragMove<any>): void {
+  onDraging(item: CdkDragMove<any>): void {
     // console.log('draging:', item);
     this.draging$.next(item);
+  }
+
+  onRelease(event: CdkDragRelease): void {
+    this.opsat.activeContainer();
   }
 }
