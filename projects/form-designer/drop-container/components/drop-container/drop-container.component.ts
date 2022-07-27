@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DropContainerOpsatService } from '../../services/drop-container-opsat.service';
 import { DropContainer } from '../../models/drop-container';
 import { SubSink } from 'subsink';
+import SortableJs from 'sortablejs';
 
 @Component({
   selector: 'qflow-form-designer-drop-container',
@@ -18,7 +19,8 @@ export class DropContainerComponent implements DropContainer, OnInit, OnDestroy 
   readonly key: string;
   @HostBinding('class.actived')
   actived?: boolean;
-  private container!: ElementRef;
+  @ViewChild('container', { static: true })
+  private readonly container!: ElementRef;
   private subs = new SubSink();
   constructor(
     private opsat: DropContainerOpsatService,
@@ -28,17 +30,22 @@ export class DropContainerComponent implements DropContainer, OnInit, OnDestroy 
   }
 
   ngOnDestroy(): void {
-    this.subs.unsubscribe();
-    this.opsat.deRegistryContainer(this.key);
+    // this.subs.unsubscribe();
+    // this.opsat.deRegistryContainer(this.key);
   }
 
   ngOnInit(): void {
-    this.opsat.registryContainer(this.key, this);
-    this.subs.sink = this.opsat.activeContainer$
-      .subscribe(key => {
-        this.actived = this.key === key;
-        this.cdr.markForCheck();
-      });
+    // this.opsat.registryContainer(this.key, this);
+    // this.subs.sink = this.opsat.activeContainer$
+    //   .subscribe(key => {
+    //     this.actived = this.key === key;
+    //     this.cdr.markForCheck();
+    //   });
+    SortableJs.create(this.container.nativeElement, {
+      group: {
+        name: 'form-designer'
+      },
+    });
   }
 
 }

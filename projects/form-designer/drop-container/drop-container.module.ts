@@ -1,20 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DropContainerComponent } from './components/drop-container/drop-container.component';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { QflowOptionalComponentsDirective } from './directives/qflow-optional-components.directive';
 
 
 @NgModule({
   declarations: [
     DropContainerComponent,
+    QflowOptionalComponentsDirective,
   ],
   imports: [
     CommonModule,
-    DragDropModule
   ],
   exports: [
     DropContainerComponent,
-    DragDropModule
+    QflowOptionalComponentsDirective
   ]
 })
 export class DropContainerModule { }

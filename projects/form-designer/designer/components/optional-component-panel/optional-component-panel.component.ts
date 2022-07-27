@@ -75,19 +75,19 @@ export class OptionalComponentPanelComponent implements OnInit, OnDestroy {
           }
         ]
       },
-      // {
-      //   title: '容器',
-      //   components: [
-      //     {
-      //       type: 'tab',
-      //       title: '选项卡'
-      //     },
-      //     {
-      //       type: 'split',
-      //       title: '分栏面板'
-      //     }
-      //   ]
-      // }
+      {
+        title: '容器',
+        components: [
+          {
+            type: 'tab',
+            title: '选项卡'
+          },
+          {
+            type: 'split',
+            title: '分栏面板'
+          }
+        ]
+      }
     ];
 
     this.subs.sink = this.opsat.containers$
