@@ -1,7 +1,21 @@
-<div class="navbar">
-  <p class="title" routerLink="/">动态表单</p>
-  <a class="nav" routerLink="/form-designer" routerLinkActive="active">设计器</a>
+<div class="navbar" [class.collapse]='isCollapsed'>
+  <div class="nav">
+    <ul nz-menu nzMode="inline" nzTheme="dark" [nzInlineCollapsed]="isCollapsed">
+      <li nz-submenu nzTitle="动态表单" nzIcon="setting" nzOpen>
+        <ul>
+          <li nz-menu-item routerLink="/form-designer" routerLinkActive="ant-menu-item-selected">设计器</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="tools">
+    <button nz-button nzType="primary" (click)="toggleCollapsed()">
+      <i nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+    </button>
+  </div>
 </div>
 <div class="content">
-  <router-outlet></router-outlet>
+  <div class="wrapper">
+    <router-outlet></router-outlet>
+  </div>
 </div>
