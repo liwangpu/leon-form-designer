@@ -9,10 +9,10 @@
     <div class="header">
       <p class="title">{{group.title}}</p>
     </div>
-    <div class="content" qflowOptionalComponents>
-      <div class="form-designer-optional-component" *ngFor="let c of group?.components">
-        <p class="title">{{c.title}}</p>
-      </div>
+    <div class="content" [sortablejs]="group.components" [sortablejsOptions]="optionalComponentOption">
+      <div class=" form-designer-optional-component" *ngFor="let c of group.components">
+      <p class="title">{{c.title}}</p>
     </div>
+  </div>
   </div>
 </ng-template>

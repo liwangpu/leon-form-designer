@@ -18,6 +18,13 @@ export class OptionalComponentPanelComponent implements OnInit, OnDestroy {
 
   componentGroups?: OptionalComponentGroup[];
   dropContainers: string[] = [];
+  optionalComponentOption = {
+    group: {
+      name: 'form-designer',
+      pull: 'clone',
+      put: false
+    },
+  };
   private draging$ = new Subject<CdkDragMove<any>>();
   private subs = new SubSink();
   constructor(
