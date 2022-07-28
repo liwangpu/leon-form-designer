@@ -16,7 +16,6 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { IconDefinition } from '@ant-design/icons-angular';
 import { MenuFoldOutline, MenuUnfoldOutline } from '@ant-design/icons-angular/icons';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { SortablejsModule } from 'ngx-sortablejs';
 
 registerLocaleData(zh);
 
@@ -37,7 +36,6 @@ const icons: Array<IconDefinition> = [MenuFoldOutline, MenuUnfoldOutline];
         NzMenuModule,
         NzButtonModule,
         NzIconModule.forRoot(icons),
-        SortablejsModule.forRoot({ animation: 150 }),
     ],
     providers: [{ provide: NZ_I18N, useValue: zh_CN }],
     bootstrap: [AppComponent]

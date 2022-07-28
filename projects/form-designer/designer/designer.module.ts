@@ -6,7 +6,6 @@ import { OptionalComponentPanelComponent } from './components/optional-component
 import { PagePresentationComponent } from './components/page-presentation/page-presentation.component';
 import { DropContainerModule } from 'form-designer/drop-container';
 import { ComponentSettingPanelComponent } from './components/component-setting-panel/component-setting-panel.component';
-import { SortablejsModule } from 'ngx-sortablejs';
 
 @NgModule({
   declarations: [
@@ -18,8 +17,7 @@ import { SortablejsModule } from 'ngx-sortablejs';
   imports: [
     CommonModule,
     DesignerRoutingModule,
-    DropContainerModule,
-    SortablejsModule
+    DropContainerModule
   ]
 })
 export class DesignerModule { }
