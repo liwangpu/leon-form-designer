@@ -1,4 +1,4 @@
-<div class="optional-list" cdkDropListGroup>
+<div class="optional-list">
   <ng-container *ngFor="let g of componentGroups">
     <ng-container *ngTemplateOutlet="groupTpl;context:{$implicit:g}"></ng-container>
   </ng-container>
@@ -9,9 +9,8 @@
     <div class="header">
       <p class="title">{{group.title}}</p>
     </div>
-    <div class="content" cdkDropList id="default-1" [cdkDropListSortingDisabled]="true" [cdkDropListConnectedTo]="dropContainers">
-      <div class="form-designer-optional-component" *ngFor="let c of group?.components" cdkDrag
-        (cdkDragMoved)="onDraging($event)" (cdkDragReleased)="onRelease($event)">
+    <div class="content" [qflowOptionalComponents]="group.components" dragItemClass="form-designer-optional-component">
+      <div class="form-designer-optional-component" *ngFor="let c of group.components">
         <p class="title">{{c.title}}</p>
       </div>
     </div>

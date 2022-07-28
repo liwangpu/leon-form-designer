@@ -6,6 +6,7 @@ import { OptionalComponentPanelComponent } from './components/optional-component
 import { PagePresentationComponent } from './components/page-presentation/page-presentation.component';
 import { DropContainerModule } from 'form-designer/drop-container';
 import { ComponentSettingPanelComponent } from './components/component-setting-panel/component-setting-panel.component';
+import { StateStoreModule } from 'form-designer/state-store';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { ComponentSettingPanelComponent } from './components/component-setting-p
   imports: [
     CommonModule,
     DesignerRoutingModule,
-    DropContainerModule
+    DropContainerModule,
+    StateStoreModule
   ]
 })
 export class DesignerModule { }

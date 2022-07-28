@@ -31,6 +31,12 @@
       "form-control": [
         "projects/form-control/src/public-api.ts",
       ],
+      "form-core": [
+        "projects/form-core/src/public-api.ts",
+      ],
+      "form-core/*": [
+        "projects/form-core/*",
+      ],
       "form-data-center": [
         "projects/form-data-center/src/public-api.ts",
       ],

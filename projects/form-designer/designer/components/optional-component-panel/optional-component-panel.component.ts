@@ -18,6 +18,13 @@ export class OptionalComponentPanelComponent implements OnInit, OnDestroy {
 
   componentGroups?: OptionalComponentGroup[];
   dropContainers: string[] = [];
+  optionalComponentOption = {
+    group: {
+      name: 'form-designer',
+      pull: 'clone',
+      put: false
+    },
+  };
   private draging$ = new Subject<CdkDragMove<any>>();
   private subs = new SubSink();
   constructor(
@@ -75,57 +82,57 @@ export class OptionalComponentPanelComponent implements OnInit, OnDestroy {
           }
         ]
       },
-      // {
-      //   title: '容器',
-      //   components: [
-      //     {
-      //       type: 'tab',
-      //       title: '选项卡'
-      //     },
-      //     {
-      //       type: 'split',
-      //       title: '分栏面板'
-      //     }
-      //   ]
-      // }
+      {
+        title: '容器',
+        components: [
+          {
+            type: 'tab',
+            title: '选项卡'
+          },
+          {
+            type: 'split',
+            title: '分栏面板'
+          }
+        ]
+      }
     ];
 
-    this.subs.sink = this.opsat.containers$
-      .subscribe(keys => {
-        this.dropContainers = keys;
-        console.log('container:', keys);
-        // this.cdr.markForCheck();
-        this.cdr.detectChanges();
-      });
+    // this.subs.sink = this.opsat.containers$
+    //   .subscribe(keys => {
+    //     this.dropContainers = keys;
+    //     console.log('container:', keys);
+    //     // this.cdr.markForCheck();
+    //     this.cdr.detectChanges();
+    //   });
 
-    this.subs.sink = this.draging$
-      .pipe(distinctUntilChanged((pre, cur) => _.isEqual(pre.event.target, cur.event.target)))
-      .subscribe(it => {
-        const ps = (it.event as MouseEvent).composedPath();
-        let containerKey: string | null = null;
-        for (let i = 0; i < ps.length - 1; i++) {
-          const e: HTMLElement = ps[i] as any;
-          if (typeof e.getAttribute === 'function') {
-            // containerDom = e;
-            const key = e.getAttribute('qflow-designer-drop-container');
-            if (key) {
-              containerKey = key;
-              break;
-            }
-          }
-        }
-        if (containerKey) {
-          this.opsat.activeContainer(containerKey);
-        }
-      });
+    // this.subs.sink = this.draging$
+    //   .pipe(distinctUntilChanged((pre, cur) => _.isEqual(pre.event.target, cur.event.target)))
+    //   .subscribe(it => {
+    //     const ps = (it.event as MouseEvent).composedPath();
+    //     let containerKey: string | null = null;
+    //     for (let i = 0; i < ps.length - 1; i++) {
+    //       const e: HTMLElement = ps[i] as any;
+    //       if (typeof e.getAttribute === 'function') {
+    //         // containerDom = e;
+    //         const key = e.getAttribute('qflow-designer-drop-container');
+    //         if (key) {
+    //           containerKey = key;
+    //           break;
+    //         }
+    //       }
+    //     }
+    //     if (containerKey) {
+    //       this.opsat.activeContainer(containerKey);
+    //     }
+    //   });
   }
 
-  onDraging(item: CdkDragMove<any>): void {
-    // console.log('draging:', item);
-    this.draging$.next(item);
-  }
+  // onDraging(item: CdkDragMove<any>): void {
+  //   // console.log('draging:', item);
+  //   this.draging$.next(item);
+  // }
 
-  onRelease(event: CdkDragRelease): void {
-    this.opsat.activeContainer();
-  }
+  // onRelease(event: CdkDragRelease): void {
+  //   this.opsat.activeContainer();
+  // }
 }
