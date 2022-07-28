@@ -23,15 +23,6 @@ export class DropContainerComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true })
   private readonly container!: ElementRef;
   private subs = new SubSink();
-  // constructor(
-  //   @Inject(DYNAMIC_COMPONENT)
-  //   private dc: DynamicComponent,
-  //   private opsat: DropContainerOpsatService,
-  //   private cdr: ChangeDetectorRef,
-
-  // ) {
-  //   this.key = uuidv4();
-  // }
   @LazyService(DYNAMIC_COMPONENT)
   private readonly dc: DynamicComponent;
   @LazyService(DropContainerOpsatService)
@@ -46,12 +37,10 @@ export class DropContainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // this.subs.unsubscribe();
-    // this.opsat.deRegistryContainer(this.key);
+    this.subs.unsubscribe();
   }
 
   ngOnInit(): void {
-    // console.log('title:',this.dc);
     SortableJs.create(this.container.nativeElement, {
       group: {
         name: 'form-designer'

@@ -1,7 +1,7 @@
-import { DynamicComponent } from './dynamic-component';
+// import { DynamicComponent } from './dynamic-component';
 
-describe('DynamicComponent', () => {
-  it('should create an instance', () => {
-    expect(new DynamicComponent()).toBeTruthy();
-  });
-});
+// describe('DynamicComponent', () => {
+//   it('should create an instance', () => {
+//     expect(new DynamicComponent()).toBeTruthy();
+//   });
+// });
