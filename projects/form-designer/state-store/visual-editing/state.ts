@@ -1,4 +1,5 @@
 export interface ComponentTreeState {
   id: string;
-  parent?: string;
+  type: string;
+  parentId?: string;
 }

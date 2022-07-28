@@ -1,5 +1,10 @@
 import { InjectionToken, Injector } from '@angular/core';
 
+export interface DynamicComponentMetadata {
+  id: string;
+  type: string;
+}
+
 export abstract class DynamicComponent {
   abstract id: string;
   abstract type: string;

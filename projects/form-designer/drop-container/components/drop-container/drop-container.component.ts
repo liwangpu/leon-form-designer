@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Inject, Injector } from '@angular/core';
 import * as _ from 'lodash';
 import * as faker from 'faker';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,7 +6,9 @@ import { DropContainerOpsatService } from '../../services/drop-container-opsat.s
 import { DropContainer } from '../../models/drop-container';
 import { SubSink } from 'subsink';
 import SortableJs from 'sortablejs';
-import { DynamicComponent, DYNAMIC_COMPONENT } from 'form-core';
+import { DynamicComponent, DynamicComponentMetadata, DYNAMIC_COMPONENT, LazyService } from 'form-core';
+import { Store } from '@ngrx/store';
+import { addNewComponent } from 'form-designer/state-store';
 
 @Component({
   selector: 'qflow-form-designer-drop-container',
@@ -14,22 +16,33 @@ import { DynamicComponent, DYNAMIC_COMPONENT } from 'form-core';
   styleUrls: ['./drop-container.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DropContainerComponent implements DropContainer, OnInit, OnDestroy {
+export class DropContainerComponent implements OnInit, OnDestroy {
 
-  @HostBinding('attr.qflow-designer-drop-container')
-  readonly key: string;
   @HostBinding('class.actived')
   actived?: boolean;
   @ViewChild('container', { static: true })
   private readonly container!: ElementRef;
   private subs = new SubSink();
+  // constructor(
+  //   @Inject(DYNAMIC_COMPONENT)
+  //   private dc: DynamicComponent,
+  //   private opsat: DropContainerOpsatService,
+  //   private cdr: ChangeDetectorRef,
+
+  // ) {
+  //   this.key = uuidv4();
+  // }
+  @LazyService(DYNAMIC_COMPONENT)
+  private readonly dc: DynamicComponent;
+  @LazyService(DropContainerOpsatService)
+  private readonly opsat: DropContainerOpsatService;
+  @LazyService(ChangeDetectorRef)
+  private readonly cdr: ChangeDetectorRef;
+  @LazyService(Store)
+  private readonly store: Store;
   constructor(
-    @Inject(DYNAMIC_COMPONENT)
-    private dc: DynamicComponent,
-    private opsat: DropContainerOpsatService,
-    private cdr: ChangeDetectorRef
+    protected injector: Injector
   ) {
-    this.key = uuidv4();
   }
 
   ngOnDestroy(): void {
@@ -38,19 +51,16 @@ export class DropContainerComponent implements DropContainer, OnInit, OnDestroy 
   }
 
   ngOnInit(): void {
-    // this.opsat.registryContainer(this.key, this);
-    // this.subs.sink = this.opsat.activeContainer$
-    //   .subscribe(key => {
-    //     this.actived = this.key === key;
-    //     this.cdr.markForCheck();
-    //   });
+    // console.log('title:',this.dc);
     SortableJs.create(this.container.nativeElement, {
       group: {
         name: 'form-designer'
       },
-      onAdd: function (/**Event*/evt) {
-        // same properties as onEnd
-        console.log('add:', evt);
+      onAdd: (evt: SortableJs.SortableEvent) => {
+        const dragEvt: DragEvent = (evt as any).originalEvent;
+        const metadataStr = dragEvt.dataTransfer.getData('Text');
+        const metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
+        this.store.dispatch(addNewComponent({ id: uuidv4(), componentType: metadata.type, parentId: this.dc.id, source: DropContainerComponent.name }));
       },
     });
   }

@@ -15,8 +15,8 @@ export class QflowOptionalComponentsDirective implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log('el:', this.el.nativeElement);
-    console.log('list:', this.list);
+    // console.log('el:', this.el.nativeElement);
+    // console.log('list:', this.list);
     SortableJs.create(this.el.nativeElement, {
       group: {
         name: 'form-designer',

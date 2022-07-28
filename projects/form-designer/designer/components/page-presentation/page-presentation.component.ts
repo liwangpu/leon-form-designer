@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, forwardRef, Injector } from '@angular/core';
-import { DynamicComponent, DYNAMIC_COMPONENT } from 'form-core';
+import { DynamicComponent, DYNAMIC_COMPONENT, LazyService } from 'form-core';
 import { DropContainerOpsatService } from 'form-designer/drop-container';
 import { SubSink } from 'subsink';
 
@@ -19,9 +19,11 @@ export class PagePresentationComponent extends DynamicComponent implements OnIni
   type: string = 'page';
   dropContainers: string[] = [];
   private subs = new SubSink();
+  @LazyService(DropContainerOpsatService)
+  private readonly opsat: DropContainerOpsatService;
+  @LazyService(ChangeDetectorRef)
+  private readonly cdr: ChangeDetectorRef;
   constructor(
-    private opsat: DropContainerOpsatService,
-    private cdr: ChangeDetectorRef,
     injector: Injector
   ) {
     super(injector);
