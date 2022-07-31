@@ -8,7 +8,7 @@ import { SubSink } from 'subsink';
 import SortableJs from 'sortablejs';
 import { DynamicComponent, DynamicComponentMetadata, DYNAMIC_COMPONENT, LazyService } from 'form-core';
 import { Store } from '@ngrx/store';
-import { addNewComponent } from 'form-designer/state-store';
+import { addNewComponent, selectChildComponents } from 'form-designer/state-store';
 
 @Component({
   selector: 'qflow-form-designer-drop-container',
@@ -52,6 +52,12 @@ export class DropContainerComponent implements OnInit, OnDestroy {
         this.store.dispatch(addNewComponent({ id: uuidv4(), componentType: metadata.type, parentId: this.dc.id, source: DropContainerComponent.name }));
       },
     });
+
+    this.subs.sink = this.store.select(selectChildComponents(this.dc.id))
+      .subscribe(components => {
+        console.log('child components:', components);
+        this.cdr.markForCheck();
+      });
   }
 
 }

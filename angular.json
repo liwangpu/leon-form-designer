@@ -278,7 +278,7 @@
       "projectType": "library",
       "root": "projects/form-core",
       "sourceRoot": "projects/form-core/src",
-      "prefix": "lib",
+      "prefix": "qflow",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
@@ -301,6 +301,45 @@
             "main": "projects/form-core/src/test.ts",
             "tsConfig": "projects/form-core/tsconfig.spec.json",
             "karmaConfig": "projects/form-core/karma.conf.js"
+          }
+        }
+      }
+    },
+    "dynamic-tabs": {
+      "projectType": "library",
+      "root": "projects/dynamic-tabs",
+      "sourceRoot": "projects/dynamic-tabs/src",
+      "prefix": "qflow",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/dynamic-tabs/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/dynamic-tabs/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/dynamic-tabs/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/dynamic-tabs/src/test.ts",
+            "tsConfig": "projects/dynamic-tabs/tsconfig.spec.json",
+            "karmaConfig": "projects/dynamic-tabs/karma.conf.js"
           }
         }
       }

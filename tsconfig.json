@@ -28,6 +28,9 @@
       "dynamic-form/*": [
         "projects/dynamic-form/*",
       ],
+      "dynamic-tabs": [
+        "projects/dynamic-tabs/src/public-api.ts",
+      ],
       "form-control": [
         "projects/form-control/src/public-api.ts",
       ],

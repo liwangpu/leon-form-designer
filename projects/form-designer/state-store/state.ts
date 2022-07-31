@@ -14,4 +14,4 @@ export const FORM_DESIGNER_INITIAL_STATE: FormDesignerState = {
 
 export const formDesignerStateKey: string = 'formDesigner';
 
-export const selectFormDataCenter = createFeatureSelector<FormDesignerState>(formDesignerStateKey);
+export const selectFormDesignerState = createFeatureSelector<FormDesignerState>(formDesignerStateKey);
