@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Inject, Injector } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Inject, Injector, ViewContainerRef, ComponentRef } from '@angular/core';
 import * as _ from 'lodash';
 import * as faker from 'faker';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,7 +6,7 @@ import { DropContainerOpsatService } from '../../services/drop-container-opsat.s
 import { DropContainer } from '../../models/drop-container';
 import { SubSink } from 'subsink';
 import SortableJs from 'sortablejs';
-import { DynamicComponent, DynamicComponentMetadata, DYNAMIC_COMPONENT, LazyService } from 'form-core';
+import { DynamicComponent, DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT, DYNAMIC_COMPONENT_RENDERER, LazyService } from 'form-core';
 import { Store } from '@ngrx/store';
 import { addNewComponent, selectChildComponents } from 'form-designer/state-store';
 
@@ -20,8 +20,10 @@ export class DropContainerComponent implements OnInit, OnDestroy {
 
   @HostBinding('class.actived')
   actived?: boolean;
-  @ViewChild('container', { static: true })
-  private readonly container!: ElementRef;
+  @ViewChild('container', { static: true, read: ViewContainerRef })
+  private readonly container: ViewContainerRef;
+  @ViewChild('dropContainer', { static: true })
+  private readonly dropContainer: ElementRef;
   private subs = new SubSink();
   @LazyService(DYNAMIC_COMPONENT)
   private readonly dc: DynamicComponent;
@@ -29,8 +31,11 @@ export class DropContainerComponent implements OnInit, OnDestroy {
   private readonly opsat: DropContainerOpsatService;
   @LazyService(ChangeDetectorRef)
   private readonly cdr: ChangeDetectorRef;
+  @LazyService(DYNAMIC_COMPONENT_RENDERER)
+  private readonly componentRenderer: DynamicComponentRenderer;
   @LazyService(Store)
   private readonly store: Store;
+  private components = new Map<string, ComponentRef<DynamicComponent>>();
   constructor(
     protected injector: Injector
   ) {
@@ -41,7 +46,7 @@ export class DropContainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    SortableJs.create(this.container.nativeElement, {
+    SortableJs.create(this.dropContainer.nativeElement, {
       group: {
         name: 'form-designer'
       },
@@ -54,8 +59,16 @@ export class DropContainerComponent implements OnInit, OnDestroy {
     });
 
     this.subs.sink = this.store.select(selectChildComponents(this.dc.id))
-      .subscribe(components => {
+      .subscribe(async components => {
         console.log('child components:', components);
+        for (let md of components) {
+          if (!this.components.has(md.id)) {
+            const ref = await this.componentRenderer.render(this.injector, md, this.container);
+            // ref.hostView
+            console.log('ref:',ref);
+            this.components.set(md.id, ref);
+          }
+        }
         this.cdr.markForCheck();
       });
   }

@@ -1,16 +1,19 @@
 import { ComponentFactory, InjectionToken } from '@angular/core';
+import { DynamicComponentGroup } from '../enums/dynamic-component-group';
 import { DynamicComponent } from './dynamic-component';
 
 export interface ComponentDescription {
-  group?: string;
-  title: string;
   type: string;
+  title: string;
+  fac: ComponentFactory<DynamicComponent>;
+  group?: DynamicComponentGroup;
   icon?: string;
 }
 
 export interface DynamicComponentRegistry {
-  getComponentDescriptions(): Array<ComponentDescription>;
-  getComponentFactory(type: string): ComponentFactory<DynamicComponent>;
+  registry(des: ComponentDescription): void;
+  getComponentDescription(type: string): Promise<ComponentDescription>;
+  getComponentDescriptions(): Promise<Array<ComponentDescription>>;
 }
 
-export const COMPONENT_REGISTRY: InjectionToken<DynamicComponentRegistry> = new InjectionToken<DynamicComponentRegistry>('dynamic component registry');
+export const DYNAMIC_COMPONENT_REGISTRY: InjectionToken<DynamicComponentRegistry> = new InjectionToken<DynamicComponentRegistry>('dynamic component registry');

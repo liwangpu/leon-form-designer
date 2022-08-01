@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { OptionalComponentGroup } from '../../models';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, Injector } from '@angular/core';
+import { OptionalComponentDefinition, OptionalComponentGroup } from '../../models';
 import * as faker from 'faker';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 import { Subject } from 'rxjs';
@@ -7,6 +7,8 @@ import { SubSink } from 'subsink';
 import { distinctUntilChanged } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { DropContainerOpsatService } from 'form-designer/drop-container';
+import { DynamicComponentGroup, DynamicComponentRegistry, DYNAMIC_COMPONENT_REGISTRY, LazyService } from 'form-core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'qflow-form-designer-optional-component-panel',
@@ -16,27 +18,27 @@ import { DropContainerOpsatService } from 'form-designer/drop-container';
 })
 export class OptionalComponentPanelComponent implements OnInit, OnDestroy {
 
-  componentGroups?: OptionalComponentGroup[];
+  componentGroups?: OptionalComponentGroup[] = [];
   dropContainers: string[] = [];
-  optionalComponentOption = {
-    group: {
-      name: 'form-designer',
-      pull: 'clone',
-      put: false
-    },
-  };
+  @LazyService(DropContainerOpsatService)
+  private readonly opsat: DropContainerOpsatService;
+  @LazyService(ChangeDetectorRef)
+  private readonly cdr: ChangeDetectorRef;
+  @LazyService(DYNAMIC_COMPONENT_REGISTRY)
+  private readonly dynamicComponentRegistry: DynamicComponentRegistry;
+  @LazyService(TranslateService)
+  private readonly translater: TranslateService;
   private draging$ = new Subject<CdkDragMove<any>>();
   private subs = new SubSink();
   constructor(
-    private opsat: DropContainerOpsatService,
-    private cdr: ChangeDetectorRef
+    protected injector: Injector
   ) { }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // this.componentGroups = [];
     // for (let i = 0; i < 10; i++) {
     //     const components = [];
@@ -52,87 +54,17 @@ export class OptionalComponentPanelComponent implements OnInit, OnDestroy {
     //     });
     // }
 
-    this.componentGroups = [
-      {
-        title: '基础字段',
-        components: [
-          {
-            type: 'a',
-            title: '文本'
-          },
-          {
-            type: 'b',
-            title: '数字'
-          },
-          {
-            type: 'c',
-            title: '电话'
-          },
-          {
-            type: 'd',
-            title: '邮箱'
-          },
-          {
-            type: 'e',
-            title: '单选'
-          },
-          {
-            type: 'f',
-            title: '多选'
-          }
-        ]
-      },
-      {
-        title: '容器',
-        components: [
-          {
-            type: 'tab',
-            title: '选项卡'
-          },
-          {
-            type: 'split',
-            title: '分栏面板'
-          }
-        ]
-      }
-    ];
 
-    // this.subs.sink = this.opsat.containers$
-    //   .subscribe(keys => {
-    //     this.dropContainers = keys;
-    //     console.log('container:', keys);
-    //     // this.cdr.markForCheck();
-    //     this.cdr.detectChanges();
-    //   });
-
-    // this.subs.sink = this.draging$
-    //   .pipe(distinctUntilChanged((pre, cur) => _.isEqual(pre.event.target, cur.event.target)))
-    //   .subscribe(it => {
-    //     const ps = (it.event as MouseEvent).composedPath();
-    //     let containerKey: string | null = null;
-    //     for (let i = 0; i < ps.length - 1; i++) {
-    //       const e: HTMLElement = ps[i] as any;
-    //       if (typeof e.getAttribute === 'function') {
-    //         // containerDom = e;
-    //         const key = e.getAttribute('qflow-designer-drop-container');
-    //         if (key) {
-    //           containerKey = key;
-    //           break;
-    //         }
-    //       }
-    //     }
-    //     if (containerKey) {
-    //       this.opsat.activeContainer(containerKey);
-    //     }
-    //   });
+    const des = await this.dynamicComponentRegistry.getComponentDescriptions();
+    const groupTypes = Object.keys(DynamicComponentGroup).map(x => DynamicComponentGroup[x]);
+    groupTypes.forEach(gt => {
+      const components: OptionalComponentDefinition[] = des.filter(x => x.group === gt).map(x => ({ type: x.type, title: x.title }));
+      this.componentGroups.push({
+        title: this.translater.instant(`dynamicComponentGroup.${gt}`),
+        components
+      });
+    });
+    this.cdr.markForCheck();
   }
 
-  // onDraging(item: CdkDragMove<any>): void {
-  //   // console.log('draging:', item);
-  //   this.draging$.next(item);
-  // }
-
-  // onRelease(event: CdkDragRelease): void {
-  //   this.opsat.activeContainer();
-  // }
 }

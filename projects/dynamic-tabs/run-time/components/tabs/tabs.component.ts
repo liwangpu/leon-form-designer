@@ -8,8 +8,6 @@ import { DynamicComponent } from 'form-core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TabsComponent extends DynamicComponent implements OnInit {
-  id: string;
-  type: string = 'tabs';
 
   constructor(
     injector: Injector
@@ -18,6 +16,7 @@ export class TabsComponent extends DynamicComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.id = `${+new Date()}`;
   }
 
 }

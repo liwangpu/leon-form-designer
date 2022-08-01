@@ -1,0 +1,9 @@
+{
+  "dynamicComponent": {
+    "tabs": "页签"
+  },
+  "dynamicComponentGroup": {
+    "formControl": "表单",
+    "container": "容器"
+  }
+}

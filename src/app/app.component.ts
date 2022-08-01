@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 const menuCollapseStatusKey = 'menuCollapseStatus';
 
@@ -10,11 +11,18 @@ const menuCollapseStatusKey = 'menuCollapseStatus';
 })
 export class AppComponent {
   public isCollapsed = false;
-  public constructor() {
-      const menuCollapseStatusKeyStr = localStorage.getItem(menuCollapseStatusKey);
-      if (menuCollapseStatusKeyStr) {
-          this.isCollapsed = JSON.parse(menuCollapseStatusKeyStr);
-      }
+  public constructor(
+    translate: TranslateService
+  ) {
+    const menuCollapseStatusKeyStr = localStorage.getItem(menuCollapseStatusKey);
+    if (menuCollapseStatusKeyStr) {
+      this.isCollapsed = JSON.parse(menuCollapseStatusKeyStr);
+    }
+    // this language will be used as a fallback when a translation isn't found in the current language
+    translate.setDefaultLang('cn');
+
+    // the lang to use, if the lang isn't available, it will use the current loader to get them
+    translate.use('cn');
   }
 
   public ngOnInit(): void {
@@ -22,7 +30,7 @@ export class AppComponent {
   }
 
   public toggleCollapsed(): void {
-      this.isCollapsed = !this.isCollapsed;
-      localStorage.setItem(menuCollapseStatusKey, `${this.isCollapsed}`);
+    this.isCollapsed = !this.isCollapsed;
+    localStorage.setItem(menuCollapseStatusKey, `${this.isCollapsed}`);
   }
 }

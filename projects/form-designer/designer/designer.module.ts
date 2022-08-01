@@ -7,6 +7,10 @@ import { PagePresentationComponent } from './components/page-presentation/page-p
 import { DropContainerModule } from 'form-designer/drop-container';
 import { ComponentSettingPanelComponent } from './components/component-setting-panel/component-setting-panel.component';
 import { StateStoreModule } from 'form-designer/state-store';
+import { RunTimeModule } from 'dynamic-tabs/run-time';
+import { DynamicComponentRegistryService } from './services/dynamic-component-registry.service';
+import { DYNAMIC_COMPONENT_REGISTRY, DYNAMIC_COMPONENT_RENDERER } from 'form-core';
+import { DynamicComponentRendererService } from './services/dynamic-component-renderer.service';
 
 @NgModule({
   declarations: [
@@ -19,7 +23,12 @@ import { StateStoreModule } from 'form-designer/state-store';
     CommonModule,
     DesignerRoutingModule,
     DropContainerModule,
-    StateStoreModule
+    StateStoreModule,
+    RunTimeModule
+  ],
+  providers: [
+    { provide: DYNAMIC_COMPONENT_REGISTRY, useClass: DynamicComponentRegistryService },
+    { provide: DYNAMIC_COMPONENT_RENDERER, useClass: DynamicComponentRendererService }
   ]
 })
 export class DesignerModule { }
