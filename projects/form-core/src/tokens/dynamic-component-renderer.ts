@@ -1,5 +1,5 @@
 import { ComponentRef, InjectionToken, Injector, ViewContainerRef } from '@angular/core';
-import { DynamicComponent, DynamicComponentMetadata } from './dynamic-component';
+import { DynamicComponent, DynamicComponentMetadata } from './dynamic-component-registry';
 
 export interface DynamicComponentRenderer {
   render(parent: Injector, metadata: DynamicComponentMetadata, container: ViewContainerRef): Promise<ComponentRef<DynamicComponent>>;

@@ -1,14 +1,15 @@
 import { createFeatureSelector } from '@ngrx/store';
-import { ComponentSettingState } from './component-setting/state';
+import { ComponentConfigurationState } from './component-configuration/state';
 import { ComponentTreeState } from './visual-editing/state';
 
 export interface FormDesignerState {
-  componentSetting: { [id: string]: ComponentSettingState };
+  activeComponentId?: string;
+  componentConfiguration: { [id: string]: ComponentConfigurationState };
   componentTree: ComponentTreeState[];
 }
 
 export const FORM_DESIGNER_INITIAL_STATE: FormDesignerState = {
-  componentSetting: {},
+  componentConfiguration: {},
   componentTree: []
 }
 

@@ -7,10 +7,12 @@ import { PagePresentationComponent } from './components/page-presentation/page-p
 import { DropContainerModule } from 'form-designer/drop-container';
 import { ComponentSettingPanelComponent } from './components/component-setting-panel/component-setting-panel.component';
 import { StateStoreModule } from 'form-designer/state-store';
-import { RunTimeModule } from 'dynamic-tabs/run-time';
+import { RunTimeModule as TabsRunTimeModule } from 'dynamic-tabs/run-time';
 import { DynamicComponentRegistryService } from './services/dynamic-component-registry.service';
-import { DYNAMIC_COMPONENT_REGISTRY, DYNAMIC_COMPONENT_RENDERER } from 'form-core';
+import { COMPONENT_DESIGN_PANEL_REGISTRY, DYNAMIC_COMPONENT_REGISTRY, DYNAMIC_COMPONENT_RENDERER } from 'form-core';
 import { DynamicComponentRendererService } from './services/dynamic-component-renderer.service';
+import { ComponentDesignPanelRegistryService } from './services/component-design-panel-registry.service';
+import { DesignTimeModule as TabsDesignTimeModule } from 'dynamic-tabs/design-time/design-time.module';
 
 @NgModule({
   declarations: [
@@ -24,11 +26,13 @@ import { DynamicComponentRendererService } from './services/dynamic-component-re
     DesignerRoutingModule,
     DropContainerModule,
     StateStoreModule,
-    RunTimeModule
+    TabsRunTimeModule,
+    TabsDesignTimeModule
   ],
   providers: [
     { provide: DYNAMIC_COMPONENT_REGISTRY, useClass: DynamicComponentRegistryService },
-    { provide: DYNAMIC_COMPONENT_RENDERER, useClass: DynamicComponentRendererService }
+    { provide: DYNAMIC_COMPONENT_RENDERER, useClass: DynamicComponentRendererService },
+    { provide: COMPONENT_DESIGN_PANEL_REGISTRY, useClass: ComponentDesignPanelRegistryService }
   ]
 })
 export class DesignerModule { }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Inject, Injector, ViewContainerRef, ComponentRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Inject, Injector, ViewContainerRef, ComponentRef, ComponentFactoryResolver, Renderer2 } from '@angular/core';
 import * as _ from 'lodash';
 import * as faker from 'faker';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,9 +6,10 @@ import { DropContainerOpsatService } from '../../services/drop-container-opsat.s
 import { DropContainer } from '../../models/drop-container';
 import { SubSink } from 'subsink';
 import SortableJs from 'sortablejs';
-import { DynamicComponent, DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT, DYNAMIC_COMPONENT_RENDERER, LazyService } from 'form-core';
+import { DynamicComponent, DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT, DYNAMIC_COMPONENT_METADATA, DYNAMIC_COMPONENT_RENDERER, LazyService } from 'form-core';
 import { Store } from '@ngrx/store';
 import { addNewComponent, selectChildComponents } from 'form-designer/state-store';
+import { ComponentDesignWrapperComponent } from '../component-design-wrapper/component-design-wrapper.component';
 
 @Component({
   selector: 'qflow-form-designer-drop-container',
@@ -27,15 +28,17 @@ export class DropContainerComponent implements OnInit, OnDestroy {
   private subs = new SubSink();
   @LazyService(DYNAMIC_COMPONENT)
   private readonly dc: DynamicComponent;
+  @LazyService(ComponentFactoryResolver)
+  private readonly cfr: ComponentFactoryResolver;
   @LazyService(DropContainerOpsatService)
   private readonly opsat: DropContainerOpsatService;
   @LazyService(ChangeDetectorRef)
   private readonly cdr: ChangeDetectorRef;
-  @LazyService(DYNAMIC_COMPONENT_RENDERER)
-  private readonly componentRenderer: DynamicComponentRenderer;
+  @LazyService(Renderer2)
+  private readonly renderer: Renderer2;
   @LazyService(Store)
   private readonly store: Store;
-  private components = new Map<string, ComponentRef<DynamicComponent>>();
+  private components = new Map<string, ComponentRef<ComponentDesignWrapperComponent>>();
   constructor(
     protected injector: Injector
   ) {
@@ -54,18 +57,24 @@ export class DropContainerComponent implements OnInit, OnDestroy {
         const dragEvt: DragEvent = (evt as any).originalEvent;
         const metadataStr = dragEvt.dataTransfer.getData('Text');
         const metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
-        this.store.dispatch(addNewComponent({ id: uuidv4(), componentType: metadata.type, parentId: this.dc.id, source: DropContainerComponent.name }));
+        this.store.dispatch(addNewComponent({ id: uuidv4(), componentType: metadata.type, parentId: this.dc.id, index: evt.newIndex, source: DropContainerComponent.name }));
       },
     });
 
     this.subs.sink = this.store.select(selectChildComponents(this.dc.id))
       .subscribe(async components => {
-        console.log('child components:', components);
-        for (let md of components) {
+        for (let index = 0; index < components.length; index++) {
+          const md = components[index];
           if (!this.components.has(md.id)) {
-            const ref = await this.componentRenderer.render(this.injector, md, this.container);
-            // ref.hostView
-            console.log('ref:',ref);
+            const fac = this.cfr.resolveComponentFactory(ComponentDesignWrapperComponent);
+            const ij = Injector.create({
+              providers: [
+                { provide: DYNAMIC_COMPONENT_METADATA, useValue: md }
+              ],
+              parent: this.injector
+            });
+            const ref = this.container.createComponent(fac, index, ij);
+            this.renderer.addClass(ref.location.nativeElement, 'drop-item');
             this.components.set(md.id, ref);
           }
         }

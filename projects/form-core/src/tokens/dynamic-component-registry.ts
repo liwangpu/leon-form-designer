@@ -1,6 +1,28 @@
-import { ComponentFactory, InjectionToken } from '@angular/core';
+import { ComponentFactory, InjectionToken, Injector } from '@angular/core';
 import { DynamicComponentGroup } from '../enums/dynamic-component-group';
-import { DynamicComponent } from './dynamic-component';
+import { LazyService, PropertyEntry } from '../utils/common-decorator';
+
+export interface DynamicComponentMetadata {
+  id: string;
+  type: string;
+  title?: string;
+}
+
+export const DYNAMIC_COMPONENT_METADATA = new InjectionToken<DynamicComponent>('dynamic component metadata');
+
+export abstract class DynamicComponent {
+  @PropertyEntry('metadata.id')
+  id: string;
+  @PropertyEntry('metadata.type')
+  type: string;
+  @LazyService(DYNAMIC_COMPONENT_METADATA)
+  metadata: DynamicComponentMetadata;
+  constructor(
+    public injector: Injector
+  ) { }
+}
+
+export const DYNAMIC_COMPONENT = new InjectionToken<DynamicComponent>('dynamic component');
 
 export interface ComponentDescription {
   type: string;

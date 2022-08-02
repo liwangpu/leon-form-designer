@@ -14,7 +14,7 @@ import { SubSink } from 'subsink';
     { provide: DYNAMIC_COMPONENT, useExisting: forwardRef(() => PagePresentationComponent) }
   ]
 })
-export class PagePresentationComponent extends DynamicComponent implements OnInit {
+export class PagePresentationComponent implements OnInit {
   id: string = 'page';
   type: string = 'page';
   dropContainers: string[] = [];
@@ -24,9 +24,8 @@ export class PagePresentationComponent extends DynamicComponent implements OnIni
   @LazyService(ChangeDetectorRef)
   private readonly cdr: ChangeDetectorRef;
   constructor(
-    injector: Injector
+    protected injector: Injector
   ) {
-    super(injector);
   }
 
   ngOnDestroy(): void {
@@ -34,12 +33,7 @@ export class PagePresentationComponent extends DynamicComponent implements OnIni
   }
 
   ngOnInit(): void {
-    // this.subs.sink = this.opsat.containers$
-    // .subscribe(keys => {
-    //   this.dropContainers = keys;
-    //   console.log('container:', keys);
-    //   this.cdr.markForCheck();
-    // });
+
   }
 
 }

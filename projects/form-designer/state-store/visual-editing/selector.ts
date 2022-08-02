@@ -9,3 +9,13 @@ export const selectChildComponents: (id: string) => MemoizedSelector<FormDesigne
     return children;
   }
 );
+
+export const selectActiveComponentId: MemoizedSelector<FormDesignerState, string> = createSelector(
+  selectFormDesignerState,
+  (state: FormDesignerState) => state.activeComponentId
+);
+
+export const selectAllComponentIds: MemoizedSelector<FormDesignerState, string[]> = createSelector(
+  selectFormDesignerState,
+  (state: FormDesignerState) => state.componentTree?.length ? state.componentTree.map(c => c.id) : []
+);

@@ -42,7 +42,7 @@ export class QflowOptionalComponentsDirective implements OnInit {
       },
       onEnd(e: any) {
         var itemEl = e.item;  // dragged HTMLElement
-        console.log('itemEl:',itemEl);
+        // console.log('itemEl:',itemEl);
         itemEl.parentElement.removeChild(itemEl);
         // let condition = true // Your condition here
         // // console.log('on end:', e);

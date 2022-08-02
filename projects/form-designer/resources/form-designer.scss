@@ -9,6 +9,10 @@ div.form-designer-optional-component {
   background-color: #fff;
   cursor: grab;
 
+  &.sortable-ghost {
+    margin-bottom: 12px;
+  }
+
   &:hover {
     border-color: #ccd4e0;
     color: #121315;
@@ -17,5 +21,25 @@ div.form-designer-optional-component {
 
   &>.title {
     margin-bottom: 0;
+  }
+}
+
+qflow-form-designer-component-setting-panel {
+  .configuration-panel {
+    &.hidden {
+      display: none !important;
+    }
+  }
+}
+
+qflow-form-designer-page-presentation {
+  qflow-form-designer-drop-container {
+    .drop-container {
+      .drop-item {
+        &:not(:last-of-type) {
+          margin-bottom: 12px;
+        }
+      }
+    }
   }
 }
