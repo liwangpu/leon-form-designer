@@ -1,1 +1,18 @@
-<p> tabs: {{id}}</p>
+<nz-tabset>
+  <!-- <nz-tab nzTitle="Tab Eagerly 1">
+
+  </nz-tab>
+  <nz-tab nzTitle="Tab Eagerly 2">
+
+  </nz-tab> -->
+  <nz-tab nzTitle="Tab Lazy 1">
+    <ng-template nz-tab>
+      <qflow-tab></qflow-tab>
+    </ng-template>
+  </nz-tab>
+  <nz-tab nzTitle="Tab Lazy 2">
+    <ng-template nz-tab>
+      <qflow-tab></qflow-tab>
+    </ng-template>
+  </nz-tab>
+</nz-tabset>

@@ -3,14 +3,18 @@ import { CommonModule } from '@angular/common';
 import { DynamicComponentGroup, DynamicComponentRegistry, DYNAMIC_COMPONENT_REGISTRY } from 'form-core';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TabComponent } from './components/tab/tab.component';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
 
 @NgModule({
   declarations: [
-    TabsComponent
+    TabsComponent,
+    TabComponent
   ],
   imports: [
     CommonModule,
-    TranslateModule
+    TranslateModule,
+    NzTabsModule
   ]
 })
 export class RunTimeModule {

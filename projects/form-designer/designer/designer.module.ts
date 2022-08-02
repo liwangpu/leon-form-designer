@@ -13,6 +13,7 @@ import { COMPONENT_DESIGN_PANEL_REGISTRY, DYNAMIC_COMPONENT_REGISTRY, DYNAMIC_CO
 import { DynamicComponentRendererService } from './services/dynamic-component-renderer.service';
 import { ComponentDesignPanelRegistryService } from './services/component-design-panel-registry.service';
 import { DesignTimeModule as TabsDesignTimeModule } from 'dynamic-tabs/design-time/design-time.module';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { DesignTimeModule as TabsDesignTimeModule } from 'dynamic-tabs/design-ti
     CommonModule,
     DesignerRoutingModule,
     DropContainerModule,
+    NzButtonModule,
     StateStoreModule,
     TabsRunTimeModule,
     TabsDesignTimeModule
