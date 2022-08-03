@@ -11,6 +11,7 @@ import { SubSink } from 'subsink';
 })
 export class ConfigPanelComponent extends ComponentDesignPanel implements OnInit, OnDestroy {
 
+
   public form: FormGroup;
   @LazyService(FormBuilder)
   protected fb: FormBuilder;
@@ -20,7 +21,8 @@ export class ConfigPanelComponent extends ComponentDesignPanel implements OnInit
   ) {
     super(injector);
     this.form = this.fb.group({
-      title: []
+      title: [],
+      body: []
     });
   }
 
@@ -30,9 +32,10 @@ export class ConfigPanelComponent extends ComponentDesignPanel implements OnInit
 
   ngOnInit(): void {
     // console.log('panel:', this.configuration);
-    // console.log('id:',this.id);
+    this.form.patchValue(this.configuration, { emitEvent: false });
     this.subs.sink = this.form.valueChanges
       .subscribe(val => {
+        // console.log('ccc:', val);
         this.onChangeFn(val);
       });
   }

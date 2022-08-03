@@ -1,10 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, Injector } from '@angular/core';
 import { OptionalComponentDefinition, OptionalComponentGroup } from '../../models';
-import * as faker from 'faker';
-import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
+import { CdkDragMove } from '@angular/cdk/drag-drop';
 import { Subject } from 'rxjs';
 import { SubSink } from 'subsink';
-import { distinctUntilChanged } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { DropContainerOpsatService } from 'form-designer/drop-container';
 import { DynamicComponentGroup, DynamicComponentRegistry, DYNAMIC_COMPONENT_REGISTRY, LazyService } from 'form-core';

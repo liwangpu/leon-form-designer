@@ -1,16 +1,20 @@
 import { ComponentFactoryResolver, Inject, NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ConfigPanelComponent } from './components/config-panel/config-panel.component';
 import { ComponentDesignPanelRegistry, COMPONENT_DESIGN_PANEL_REGISTRY } from 'form-core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { TabsSettingComponent } from './components/tabs-setting/tabs-setting.component';
+import { DesignerSharedModule } from 'form-core/designer-shared';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 
 @NgModule({
   declarations: [
-    ConfigPanelComponent
+    ConfigPanelComponent,
+    TabsSettingComponent
   ],
   imports: [
-    CommonModule,
-    ReactiveFormsModule
+    DesignerSharedModule,
+    NzInputModule,
+    NzButtonModule
   ]
 })
 export class DesignTimeModule {

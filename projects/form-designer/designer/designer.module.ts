@@ -9,11 +9,12 @@ import { ComponentSettingPanelComponent } from './components/component-setting-p
 import { StateStoreModule } from 'form-designer/state-store';
 import { RunTimeModule as TabsRunTimeModule } from 'dynamic-tabs/run-time';
 import { DynamicComponentRegistryService } from './services/dynamic-component-registry.service';
-import { COMPONENT_DESIGN_PANEL_REGISTRY, DYNAMIC_COMPONENT_REGISTRY, DYNAMIC_COMPONENT_RENDERER } from 'form-core';
+import { COMPONENT_DESIGN_PANEL_REGISTRY, CUSTOM_RENDER_PROVIDER, DYNAMIC_COMPONENT_REGISTRY, DYNAMIC_COMPONENT_RENDERER } from 'form-core';
 import { DynamicComponentRendererService } from './services/dynamic-component-renderer.service';
 import { ComponentDesignPanelRegistryService } from './services/component-design-panel-registry.service';
 import { DesignTimeModule as TabsDesignTimeModule } from 'dynamic-tabs/design-time/design-time.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { CustomRenderProviderService } from './services/custom-render-provider.service';
 
 @NgModule({
   declarations: [
@@ -32,9 +33,10 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
     TabsDesignTimeModule
   ],
   providers: [
+    { provide: CUSTOM_RENDER_PROVIDER, useClass: CustomRenderProviderService },
     { provide: DYNAMIC_COMPONENT_REGISTRY, useClass: DynamicComponentRegistryService },
     { provide: DYNAMIC_COMPONENT_RENDERER, useClass: DynamicComponentRendererService },
-    { provide: COMPONENT_DESIGN_PANEL_REGISTRY, useClass: ComponentDesignPanelRegistryService }
+    { provide: COMPONENT_DESIGN_PANEL_REGISTRY, useClass: ComponentDesignPanelRegistryService },
   ]
 })
 export class DesignerModule { }

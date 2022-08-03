@@ -1,6 +1,7 @@
 {
   "dynamicComponent": {
-    "tabs": "页签"
+    "tabs": "页签",
+    "tab": "页签"
   },
   "dynamicComponentGroup": {
     "formControl": "表单",

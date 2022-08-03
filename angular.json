@@ -48,7 +48,8 @@
             "styles": [
               "src/theme.less",
               "src/styles.scss",
-              "projects/form-designer/resources/form-designer.scss"
+              "projects/form-designer/resources/form-designer.scss",
+              "projects/dynamic-tabs/resources/dynamic-tabs.scss"
             ],
             "scripts": []
           },
@@ -279,6 +280,14 @@
       "root": "projects/form-core",
       "sourceRoot": "projects/form-core/src",
       "prefix": "qflow",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",

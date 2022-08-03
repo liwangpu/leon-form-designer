@@ -10,6 +10,7 @@
     display: flex;
     justify-content: flex-end;
     padding: 8px 20px;
+    border-bottom: 1px solid #cacdd1;
   }
 
   &>.content {
@@ -21,9 +22,11 @@
     }
 
     .page-presentaion {
+      position: relative;
       flex: 1;
       padding: 20px 30px;
       background-color: #EBEDF1;
+      overflow: hidden;
     }
 
     .componet-setting-panel {

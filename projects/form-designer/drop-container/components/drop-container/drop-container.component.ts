@@ -1,12 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Inject, Injector, ViewContainerRef, ComponentRef, ComponentFactoryResolver, Renderer2 } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Injector, ViewContainerRef, ComponentRef, ComponentFactoryResolver, Renderer2 } from '@angular/core';
 import * as _ from 'lodash';
-import * as faker from 'faker';
-import { v4 as uuidv4 } from 'uuid';
 import { DropContainerOpsatService } from '../../services/drop-container-opsat.service';
-import { DropContainer } from '../../models/drop-container';
 import { SubSink } from 'subsink';
 import SortableJs from 'sortablejs';
-import { DynamicComponent, DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT, DYNAMIC_COMPONENT_METADATA, DYNAMIC_COMPONENT_RENDERER, LazyService } from 'form-core';
+import { DynamicComponent, DynamicComponentMetadata, DynamicComponentRegistry, DYNAMIC_COMPONENT, DYNAMIC_COMPONENT_REGISTRY, LazyService, UNIQUE_ID } from 'form-core';
+import { v4 as uuidv4 } from 'uuid';
 import { Store } from '@ngrx/store';
 import { addNewComponent, selectChildComponents } from 'form-designer/state-store';
 import { ComponentDesignWrapperComponent } from '../component-design-wrapper/component-design-wrapper.component';
@@ -17,7 +15,7 @@ import { ComponentDesignWrapperComponent } from '../component-design-wrapper/com
   styleUrls: ['./drop-container.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DropContainerComponent implements OnInit, OnDestroy {
+export class DropContainerComponent extends DynamicComponent implements OnInit, OnDestroy {
 
   @HostBinding('class.actived')
   actived?: boolean;
@@ -26,8 +24,6 @@ export class DropContainerComponent implements OnInit, OnDestroy {
   @ViewChild('dropContainer', { static: true })
   private readonly dropContainer: ElementRef;
   private subs = new SubSink();
-  @LazyService(DYNAMIC_COMPONENT)
-  private readonly dc: DynamicComponent;
   @LazyService(ComponentFactoryResolver)
   private readonly cfr: ComponentFactoryResolver;
   @LazyService(DropContainerOpsatService)
@@ -38,10 +34,13 @@ export class DropContainerComponent implements OnInit, OnDestroy {
   private readonly renderer: Renderer2;
   @LazyService(Store)
   private readonly store: Store;
+  @LazyService(DYNAMIC_COMPONENT_REGISTRY)
+  private readonly dynamicComponentRegistry: DynamicComponentRegistry;
   private components = new Map<string, ComponentRef<ComponentDesignWrapperComponent>>();
   constructor(
-    protected injector: Injector
+    injector: Injector
   ) {
+    super(injector);
   }
 
   ngOnDestroy(): void {
@@ -53,23 +52,30 @@ export class DropContainerComponent implements OnInit, OnDestroy {
       group: {
         name: 'form-designer'
       },
-      onAdd: (evt: SortableJs.SortableEvent) => {
+      onAdd: async (evt: SortableJs.SortableEvent) => {
+        // console.log('add:', evt);
         const dragEvt: DragEvent = (evt as any).originalEvent;
         const metadataStr = dragEvt.dataTransfer.getData('Text');
-        const metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
-        this.store.dispatch(addNewComponent({ id: uuidv4(), componentType: metadata.type, parentId: this.dc.id, index: evt.newIndex, source: DropContainerComponent.name }));
+        if (!metadataStr) { return; }
+        let metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
+        const des = await this.dynamicComponentRegistry.getComponentDescription(metadata.type);
+        if (typeof des.bodyProvider === 'function') {
+          metadata.body = des.bodyProvider();
+        }
+        this.store.dispatch(addNewComponent({ metadata: { ...metadata, id: uuidv4() }, parentId: this.metadata.id, index: evt.newIndex, source: DropContainerComponent.name }));
       },
     });
 
-    this.subs.sink = this.store.select(selectChildComponents(this.dc.id))
+    this.subs.sink = this.store.select(selectChildComponents(this.metadata.id))
       .subscribe(async components => {
+        // console.log('components:',components);
         for (let index = 0; index < components.length; index++) {
           const md = components[index];
           if (!this.components.has(md.id)) {
             const fac = this.cfr.resolveComponentFactory(ComponentDesignWrapperComponent);
             const ij = Injector.create({
               providers: [
-                { provide: DYNAMIC_COMPONENT_METADATA, useValue: md }
+                { provide: UNIQUE_ID, useValue: md.id },
               ],
               parent: this.injector
             });

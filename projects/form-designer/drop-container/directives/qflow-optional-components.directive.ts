@@ -21,7 +21,7 @@ export class QflowOptionalComponentsDirective implements OnInit {
       group: {
         name: 'form-designer',
         pull: 'clone',
-        put: false
+        // put: false
       },
       sort: false,
       setData: (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl: HTMLElement) => {

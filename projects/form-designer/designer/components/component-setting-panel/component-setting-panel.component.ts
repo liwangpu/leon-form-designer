@@ -2,7 +2,8 @@ import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ViewContainerRef
 import { Store } from '@ngrx/store';
 import { ComponentDesignPanel, ComponentDesignPanelRegistry, COMPONENT_DESIGN_CONFIGURATION, COMPONENT_DESIGN_PANEL_REGISTRY, LazyService } from 'form-core';
 import { selectActiveComponentConfiguration, selectActiveComponentId, setComponentConfiguration } from 'form-designer/state-store';
-import { filter } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, filter } from 'rxjs/operators';
 import { SubSink } from 'subsink';
 
 @Component({
@@ -42,6 +43,7 @@ export class ComponentSettingPanelComponent implements OnInit, OnDestroy {
     //   console.log('componentIds:', componentIds);
     //   this.cdr.markForCheck();
     // });
+    // TODO: 补充销毁
     this.subs.sink = this.store.select(selectActiveComponentConfiguration)
       .pipe(filter(cfg => cfg ? true : false))
       .subscribe(async cfg => {
@@ -57,8 +59,20 @@ export class ComponentSettingPanelComponent implements OnInit, OnDestroy {
             parent: this.injector
           });
           const ref = this.container.createComponent(des.fac, null, ij);
+          const valueChange$ = new Subject<any>();
+          const sub = new SubSink();
           ref.instance.registerOnChange(val => {
-            this.store.dispatch(setComponentConfiguration({ id: cfg.id, configuration: { ...val, id: cfg.id, type: cfg.type }, source: ComponentSettingPanelComponent.name }));
+            valueChange$.next(val);
+          });
+          sub.sink = valueChange$
+            .pipe(debounceTime(120))
+            .subscribe(val => {
+              this.store.dispatch(
+                setComponentConfiguration({ id: cfg.id, metadata: { ...val, id: cfg.id, type: cfg.type }, source: ComponentSettingPanelComponent.name })
+              );
+            });
+          ref.onDestroy(() => {
+            sub.unsubscribe();
           });
           this.renderer.addClass(ref.location.nativeElement, 'configuration-panel');
           this.panelMap.set(cfg.id, ref);

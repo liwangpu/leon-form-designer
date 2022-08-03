@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, ComponentFactory, ElementRef, InjectionToken, Injector, Renderer2 } from '@angular/core';
-import { LazyService, PropertyEntry } from '../utils/common-decorator';
+import { LazyService, PropertyEntry } from '../../utils/common-decorator';
 
 export interface ComponentDesignConfiguration {
   id: string;

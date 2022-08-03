@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, Injector, ChangeDetectorRef
 import { Store } from '@ngrx/store';
 import { LazyService } from 'form-core';
 import { DropContainerOpsatService } from 'form-designer/drop-container';
-import { selectFormDesignerState } from 'form-designer/state-store';
+import { selectFormDesignerState, setDesignerState } from 'form-designer/state-store';
 import { debounceTime } from 'rxjs/operators';
 import { SubSink } from 'subsink';
 
@@ -28,7 +28,7 @@ export class DesignerComponent implements OnInit, OnDestroy {
     protected injector: Injector
   ) {
     if (sessionStorage.getItem(designerDraft)) {
-
+      this.store.dispatch(setDesignerState({ state: JSON.parse(sessionStorage.getItem(designerDraft)), source: DesignerComponent.name }));
     }
   }
 
@@ -42,6 +42,11 @@ export class DesignerComponent implements OnInit, OnDestroy {
       .subscribe(state => {
         sessionStorage.setItem(designerDraft, JSON.stringify(state));
       });
+  }
+
+  clearCache(): void {
+    sessionStorage.removeItem(designerDraft);
+    location.reload();
   }
 
 }

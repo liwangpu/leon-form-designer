@@ -1,14 +1,28 @@
 :host {
+  position: relative;
   display: block;
   border: 1px dashed transparent;
   padding: 6px 12px;
 
   &:hover {
-    border-color: #1890FF;
+    border-color: #205DD9;
   }
 
   &.actived {
     border-style: solid;
-    border-color: #1890FF;
+    border-color: #205DD9;
+    &>.tools {
+      display: flex; 
+    }
+  }
+
+  &>.tools {
+    position: absolute;
+    display: none;
+    top: -20px;
+    left: -1px;
+    width: 120px;
+    height: 20px;
+    background-color: #205DD9;
   }
 }

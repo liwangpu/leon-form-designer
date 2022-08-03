@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Injector } from '@angular/core';
-import { DynamicComponent } from 'form-core';
+import { DynamicComponent, DynamicComponentMetadata, PropertyEntry } from 'form-core';
 
 @Component({
   selector: 'qflow-tabs',
@@ -9,6 +9,8 @@ import { DynamicComponent } from 'form-core';
 })
 export class TabsComponent extends DynamicComponent implements OnInit {
 
+  @PropertyEntry('metadata.body')
+  tabs: DynamicComponentMetadata[];
   constructor(
     injector: Injector
   ) {
@@ -17,6 +19,12 @@ export class TabsComponent extends DynamicComponent implements OnInit {
 
   ngOnInit(): void {
     // this.id = `${+new Date()}`;
+    // console.log('tabs metadata:', this.metadata);
+    // console.log('tabs:', this.tabs);
+  }
+
+  trackById(index: number, it: DynamicComponentMetadata): any {
+    return it.id;
   }
 
 }

@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Injector } from '@angular/core';
+import { DynamicComponent } from 'form-core';
 
 @Component({
   selector: 'qflow-tab',
@@ -6,9 +7,13 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   styleUrls: ['./tab.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TabComponent implements OnInit {
+export class TabComponent extends DynamicComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    injector: Injector
+  ) {
+    super(injector);
+  }
 
   ngOnInit(): void {
   }
