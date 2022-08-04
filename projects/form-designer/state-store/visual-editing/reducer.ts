@@ -18,6 +18,8 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
         if (!componentTree.some(c => c.id === cmd.id)) {
           const ctree: ComponentTreeState = { id: cmd.id, type: cmd.type, parentId: metadata.id };
           componentTree.push(ctree);
+
+          
         }
       }
       tree.body = metadata.body.map(c => c.id);

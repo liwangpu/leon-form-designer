@@ -66,10 +66,11 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
         const metadataStr = dragEvt.dataTransfer.getData('Text');
         // console.log('metadataStr:', metadataStr);
         if (!metadataStr) { return; }
-        const metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
+        let metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
         const des = await this.dynamicComponentRegistry.getComponentDescription(metadata.type);
-        if (typeof des.bodyProvider === 'function') {
-          metadata.body = des.bodyProvider();
+        if (typeof des.metadataProvider === 'function') {
+          const partialMetadata = des.metadataProvider();
+          metadata = { ...metadata, ...partialMetadata };
         }
         this.store.dispatch(addNewComponent({ metadata: { ...metadata, id: uuidv4() }, parentId: this.metadata.id, index: evt.newIndex, source: DropContainerComponent.name }));
       },
