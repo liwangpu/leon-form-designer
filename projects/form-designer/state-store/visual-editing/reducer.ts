@@ -8,11 +8,10 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
   on(fromAction.addNewComponent, (state: FormDesignerState, { metadata, parentId, index }) => {
     const componentTree = [...state.componentTree];
     if (componentTree.some(c => c.id === metadata.id)) { return state; }
-    const componentConfiguration = { ...state.componentConfiguration };
-    const comp: ComponentTreeState = { id: metadata.id, type: metadata.type, parentId };
-    componentTree.splice(index, 0, comp);
-    // const md: DynamicComponentMetadata = { id: metadata.id, type: metadata.type, title: metadata.title };
-    componentConfiguration[metadata.id] = metadata;
+    const componentMetadata = { ...state.componentMetadata };
+    const tree: ComponentTreeState = { id: metadata.id, type: metadata.type, parentId };
+    componentTree.splice(index, 0, tree);
+    componentMetadata[metadata.id] = { ...metadata, body: [] };
     // 容器组件的body需要维护到tree上
     if (metadata.body?.length) {
       for (let cmd of metadata.body) {
@@ -21,8 +20,9 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
           componentTree.push(ctree);
         }
       }
+      tree.body = metadata.body.map(c => c.id);
     }
-    return { ...state, componentTree, componentConfiguration, activeComponentId: metadata.id };
+    return { ...state, componentTree, componentMetadata, activeComponentId: metadata.id };
   }),
   on(fromAction.activeComponent, (state: FormDesignerState, { id }) => {
     if (state.activeComponentId === id) { return state; }
@@ -31,7 +31,7 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
   on(fromAction.moveComponent, (state: FormDesignerState, { id, parentId, index }) => {
     // if (state.activeComponentId === id) { return state; }
     const componentTree = [...state.componentTree];
-    
+
     return { ...state };
   })
 ];

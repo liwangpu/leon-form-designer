@@ -4,10 +4,10 @@ import { ComponentTreeState } from '../visual-editing';
 import * as fromAction from './action';
 
 export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string, Creator<any[], object>>[]>[] = [
-  on(fromAction.setComponentConfiguration, (state: FormDesignerState, { id, metadata }) => {
+  on(fromAction.setComponentMetadata, (state: FormDesignerState, { id, metadata }) => {
     const componentTree = [...state.componentTree];
-    const componentConfiguration = { ...state.componentConfiguration };
-    componentConfiguration[id] = metadata;
+    const componentMetadata = { ...state.componentMetadata };
+    componentMetadata[id] = metadata;
     // 容器组件的body需要维护到tree上
     if (metadata.body?.length) {
       for (let cmd of metadata.body) {
@@ -17,6 +17,6 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
         }
       }
     }
-    return { ...state, componentConfiguration, componentTree };
+    return { ...state, componentMetadata, componentTree };
   })
 ];

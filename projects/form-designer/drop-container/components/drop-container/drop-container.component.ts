@@ -6,7 +6,7 @@ import SortableJs from 'sortablejs';
 import { DynamicComponent, DynamicComponentMetadata, DynamicComponentRegistry, DYNAMIC_COMPONENT, DYNAMIC_COMPONENT_REGISTRY, LazyService, UNIQUE_ID } from 'form-core';
 import { v4 as uuidv4 } from 'uuid';
 import { Store } from '@ngrx/store';
-import { addNewComponent, moveComponent, selectChildComponents, selectComponentConfiguration } from 'form-designer/state-store';
+import { addNewComponent, moveComponent, selectBodyComponents, selectComponentMetadata } from 'form-designer/state-store';
 import { ComponentDesignWrapperComponent } from '../component-design-wrapper/component-design-wrapper.component';
 import { first } from 'rxjs/operators';
 
@@ -56,7 +56,7 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
       },
       setData: async (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl: HTMLElement) => {
         const id = dragEl.id;
-        const metadata = await this.store.select(selectComponentConfiguration(id)).pipe(first()).toPromise();
+        const metadata = await this.store.select(selectComponentMetadata(id)).pipe(first()).toPromise();
         dataTransfer.setData('Text', JSON.stringify({ id, type: metadata.type }));
         console.log('set data:', { id, type: metadata.type });
       },
@@ -94,7 +94,7 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
       }
     });
 
-    this.subs.sink = this.store.select(selectChildComponents(this.metadata.id))
+    this.subs.sink = this.store.select(selectBodyComponents(this.metadata.id))
       .subscribe(async components => {
         // console.log('components:',components);
         for (let index = 0; index < components.length; index++) {

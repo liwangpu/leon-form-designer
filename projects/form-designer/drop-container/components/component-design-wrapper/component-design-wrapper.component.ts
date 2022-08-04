@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, Injector, Inject, ViewChild, ViewContainerRef, ChangeDetectorRef, OnDestroy, HostBinding, HostListener } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT_RENDERER, LazyService, UNIQUE_ID } from 'form-core';
-import { activeComponent, selectActiveComponentId, selectComponentConfiguration } from 'form-designer/state-store';
+import { activeComponent, selectActiveComponentId, selectComponentMetadata } from 'form-designer/state-store';
 import * as _ from 'lodash';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { SubSink } from 'subsink';
@@ -39,7 +39,7 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     // console.log('md:', this.metadata);
-    this.subs.sink = this.store.select(selectComponentConfiguration(this.id))
+    this.subs.sink = this.store.select(selectComponentMetadata(this.id))
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe(metadata => {
         // console.log('cfg:', cfg);
