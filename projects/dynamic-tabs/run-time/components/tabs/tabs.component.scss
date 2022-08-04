@@ -1,7 +1,9 @@
 :host {
   position: relative;
   display: block;
-  min-height: 160px;
+  // min-height: 400px;
+  min-height: 260px;
+  background-color: #fff;
 
   &>.tabset {
     position: absolute;

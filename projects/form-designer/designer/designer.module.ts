@@ -7,12 +7,10 @@ import { PagePresentationComponent } from './components/page-presentation/page-p
 import { DropContainerModule } from 'form-designer/drop-container';
 import { ComponentSettingPanelComponent } from './components/component-setting-panel/component-setting-panel.component';
 import { StateStoreModule } from 'form-designer/state-store';
-import { RunTimeModule as TabsRunTimeModule } from 'dynamic-tabs/run-time';
 import { DynamicComponentRegistryService } from './services/dynamic-component-registry.service';
 import { COMPONENT_DESIGN_PANEL_REGISTRY, CUSTOM_RENDER_PROVIDER, DYNAMIC_COMPONENT_REGISTRY, DYNAMIC_COMPONENT_RENDERER } from 'form-core';
 import { DynamicComponentRendererService } from './services/dynamic-component-renderer.service';
 import { ComponentDesignPanelRegistryService } from './services/component-design-panel-registry.service';
-import { DesignTimeModule as TabsDesignTimeModule } from 'dynamic-tabs/design-time/design-time.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { CustomRenderProviderService } from './services/custom-render-provider.service';
 
@@ -28,9 +26,7 @@ import { CustomRenderProviderService } from './services/custom-render-provider.s
     DesignerRoutingModule,
     DropContainerModule,
     NzButtonModule,
-    StateStoreModule,
-    TabsRunTimeModule,
-    TabsDesignTimeModule
+    StateStoreModule
   ],
   providers: [
     { provide: CUSTOM_RENDER_PROVIDER, useClass: CustomRenderProviderService },

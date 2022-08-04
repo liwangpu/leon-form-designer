@@ -43,6 +43,7 @@ export class TabWrapperComponent implements OnInit {
     if (fac) {
       this.container.createComponent(fac, null, ij);
     }
+    this.cdr.markForCheck();
   }
 
 }
