@@ -2,6 +2,20 @@ import { createSelector, MemoizedSelector } from '@ngrx/store';
 import { DynamicComponentMetadata } from 'form-core';
 import { FormDesignerState, selectFormDesignerState } from '../state';
 
+function getBodyMetadata(state: FormDesignerState, bodyIds: string[]): DynamicComponentMetadata[] {
+  const body: DynamicComponentMetadata[] = [];
+  if (bodyIds?.length) {
+    bodyIds.forEach(cid => {
+      const cmd = state.componentMetadata[cid] || {};
+      const ctree = state.componentTree.find(c => c.id === cid);
+      if (!ctree) { return; }
+      body.push({ ...cmd, id: cid, type: ctree.type });
+    });
+  }
+  return body;
+}
+
+// 注意,这里body只选择第一级
 export const selectActiveComponentMetadata: MemoizedSelector<FormDesignerState, DynamicComponentMetadata> = createSelector(
   selectFormDesignerState,
   (state: FormDesignerState) => {
@@ -10,10 +24,12 @@ export const selectActiveComponentMetadata: MemoizedSelector<FormDesignerState, 
     const tree = state.componentTree.find(c => c.id === state.activeComponentId);
     if (!tree) { return null; }
     const metadata = state.componentMetadata[tree.id] || {};
-    return { ...metadata, id: tree.id, type: tree.type };
+    const body = getBodyMetadata(state, tree.body);
+    return { ...metadata, id: tree.id, type: tree.type, body };
   }
 );
 
+// 注意,这里body只选择第一级
 export const selectComponentMetadata: (id: string) => MemoizedSelector<FormDesignerState, DynamicComponentMetadata> = id => createSelector(
   selectFormDesignerState,
   (state: FormDesignerState) => {
@@ -22,6 +38,7 @@ export const selectComponentMetadata: (id: string) => MemoizedSelector<FormDesig
     const tree = state.componentTree.find(c => c.id === id);
     if (!tree) { return null; }
     const metadata = state.componentMetadata[tree.id] || {};
-    return { ...metadata, id: tree.id, type: tree.type };
+    const body = getBodyMetadata(state, tree.body);
+    return { ...metadata, id: tree.id, type: tree.type, body };
   }
 );

@@ -19,7 +19,7 @@ export class TabsComponent extends DynamicComponent implements OnInit {
 
   ngOnInit(): void {
     // this.id = `${+new Date()}`;
-    // console.log('tabs metadata:', this.metadata);
+    console.log('tabs metadata:', this.metadata);
     // console.log('tabs:', this.tabs);
   }
 
