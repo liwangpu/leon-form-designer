@@ -32,15 +32,15 @@ export class RunTimeModule {
       title: translater.instant(`dynamicComponent.tabs`),
       group: DynamicComponentGroup.container,
       fac: cfr.resolveComponentFactory(TabsComponent),
-      bodyProvider: () => {
-        return [
+      metadataProvider: () => ({
+        body: [
           {
             id: uuidv4(),
             type: 'tab',
             title: '页签1'
           }
-        ];
-      }
+        ]
+      })
     });
 
     componentRegistry.registry({

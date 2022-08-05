@@ -13,8 +13,8 @@
   }
 
   &>.drop-container {
-    display: flex;
-    flex-flow: column;
+    display: block;
+    // flex-flow: column ;
     width: 100%;
     height: 100%;
 

@@ -21,7 +21,7 @@ export class QflowOptionalComponentsDirective implements OnInit {
       group: {
         name: 'form-designer',
         pull: 'clone',
-        // put: false
+        put: false
       },
       sort: false,
       setData: (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl: HTMLElement) => {
@@ -39,38 +39,18 @@ export class QflowOptionalComponentsDirective implements OnInit {
       onStart: function (/**Event*/evt) {
         // evt.oldIndex;  // element index within parent
         // console.log('stat:', evt);
+        // setTimeout(() => {
+        //   debugger;
+        // }, 1000);
       },
-      onEnd(e: any) {
-        var itemEl = e.item;  // dragged HTMLElement
-        // console.log('itemEl:',itemEl);
-        itemEl.parentElement.removeChild(itemEl);
-        // let condition = true // Your condition here
-        // // console.log('on end:', e);
-        // if (condition) {
-        //   itemEl.parentElement.removeChild(itemEl);
-        //   return;
-        // }
+      onEnd(evt: SortableJs.SortableEvent) {
+        if (evt.from === evt.to) { return; }
+        const el = evt.item;  // dragged HTMLElement
+        el.parentElement.removeChild(el);
       },
-      onMove: function (/**Event*/evt, /**Event*/originalEvent) {
-        // // Example: https://jsbin.com/nawahef/edit?js,output
-        // evt.dragged; // dragged HTMLElement
-        // evt.draggedRect; // DOMRect {left, top, right, bottom}
-        // evt.related; // HTMLElement on which have guided
-        // evt.relatedRect; // DOMRect
-        // evt.willInsertAfter; // Boolean that is true if Sortable will insert drag element after target by default
-        // originalEvent.clientY; // mouse position
-        // // return false; — for cancel
-        // // return -1; — insert before target
-        // // return 1; — insert after target
-        // // return true; — keep default insertion point based on the direction
-        // // return void; — keep default insertion point based on the direction
-        // console.log('move:', evt);
+      onChange(evt) {
+        // debugger
       },
-      onChange: function (/**Event*/evt) {
-        // evt.newIndex // most likely why this event is used is to get the dragging element's current index
-        // same properties as onEnd
-        // console.log('change:', evt);
-      }
     });
   }
 

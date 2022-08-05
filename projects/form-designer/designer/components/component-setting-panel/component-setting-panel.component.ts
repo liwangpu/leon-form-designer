@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ViewContainerRef, OnDestroy, Injector, ChangeDetectorRef, ComponentRef, Renderer2 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ComponentDesignPanel, ComponentDesignPanelRegistry, COMPONENT_DESIGN_CONFIGURATION, COMPONENT_DESIGN_PANEL_REGISTRY, LazyService } from 'form-core';
-import { selectActiveComponentConfiguration, selectActiveComponentId, setComponentConfiguration } from 'form-designer/state-store';
+import { selectActiveComponentMetadata, selectActiveComponentId, setComponentMetadata } from 'form-designer/state-store';
 import { Subject } from 'rxjs';
 import { debounceTime, filter } from 'rxjs/operators';
 import { SubSink } from 'subsink';
@@ -44,7 +44,7 @@ export class ComponentSettingPanelComponent implements OnInit, OnDestroy {
     //   this.cdr.markForCheck();
     // });
     // TODO: 补充销毁
-    this.subs.sink = this.store.select(selectActiveComponentConfiguration)
+    this.subs.sink = this.store.select(selectActiveComponentMetadata)
       .pipe(filter(cfg => cfg ? true : false))
       .subscribe(async cfg => {
         // console.log('cfg:', cfg);
@@ -68,7 +68,7 @@ export class ComponentSettingPanelComponent implements OnInit, OnDestroy {
             .pipe(debounceTime(120))
             .subscribe(val => {
               this.store.dispatch(
-                setComponentConfiguration({ id: cfg.id, metadata: { ...val, id: cfg.id, type: cfg.type }, source: ComponentSettingPanelComponent.name })
+                setComponentMetadata({ id: cfg.id, metadata: { ...val, id: cfg.id, type: cfg.type }, source: ComponentSettingPanelComponent.name })
               );
             });
           ref.onDestroy(() => {

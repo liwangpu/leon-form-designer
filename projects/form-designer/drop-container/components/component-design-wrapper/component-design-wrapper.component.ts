@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, Injector, Inject, ViewChild, ViewContainerRef, ChangeDetectorRef, OnDestroy, HostBinding, HostListener } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Injector, Inject, ViewChild, ViewContainerRef, ChangeDetectorRef, OnDestroy, HostBinding, HostListener, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT_RENDERER, LazyService, UNIQUE_ID } from 'form-core';
-import { activeComponent, selectActiveComponentId, selectComponentConfiguration } from 'form-designer/state-store';
+import { activeComponent, selectActiveComponentId, selectComponentMetadata } from 'form-designer/state-store';
 import * as _ from 'lodash';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { SubSink } from 'subsink';
@@ -14,10 +14,12 @@ import { SubSink } from 'subsink';
 })
 export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
 
+  @Input()
+  metadata: DynamicComponentMetadata;
   @HostBinding('class.actived')
-  public actived: boolean;
+  actived: boolean;
   @ViewChild('container', { static: true, read: ViewContainerRef })
-  public readonly container: ViewContainerRef;
+  readonly container: ViewContainerRef;
 
   @LazyService(DYNAMIC_COMPONENT_RENDERER)
   private readonly componentRenderer: DynamicComponentRenderer;
@@ -27,19 +29,17 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
   private readonly store: Store;
   private subs = new SubSink();
   constructor(
-    @Inject(UNIQUE_ID)
-    public id: string,
     protected injector: Injector
   ) {
   }
 
-  public ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
 
   async ngOnInit(): Promise<void> {
-    // console.log('md:', this.metadata);
-    this.subs.sink = this.store.select(selectComponentConfiguration(this.id))
+    console.log('md:', this.metadata);
+    this.subs.sink = this.store.select(selectComponentMetadata(this.metadata.id))
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe(metadata => {
         // console.log('cfg:', cfg);
@@ -48,7 +48,7 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
       });
     this.subs.sink = this.store.select(selectActiveComponentId)
       .subscribe(id => {
-        this.actived = this.id === id;
+        this.actived = this.metadata.id === id;
         this.cdr.markForCheck();
       });
     this.cdr.markForCheck();
@@ -57,7 +57,7 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
   @HostListener('click', ['$event'])
   onActive(event: MouseEvent): void {
     event.stopPropagation();
-    this.store.dispatch(activeComponent({ id: this.id, source: ComponentDesignWrapperComponent.name }));
+    this.store.dispatch(activeComponent({ id: this.metadata.id, source: ComponentDesignWrapperComponent.name }));
   }
 
   private async renderComponent(metadata: DynamicComponentMetadata): Promise<void> {

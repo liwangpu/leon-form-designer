@@ -9,7 +9,7 @@ div.form-designer-optional-component {
   background-color: #fff;
   cursor: grab;
 
-  &.sortable-ghost {
+  &.sortable-drag {
     margin: 12px 0;
   }
 
@@ -35,9 +35,17 @@ qflow-form-designer-component-setting-panel {
 qflow-form-designer-page-presentation {
   qflow-form-designer-drop-container {
     .drop-container {
+      &>.sortable-ghost {
+        // margin: 12px 0;
+      }
+
       .drop-item {
         &:not(:last-of-type) {
           margin-bottom: 12px;
+        }
+
+        &.sortable-ghost{
+ 
         }
       }
     }

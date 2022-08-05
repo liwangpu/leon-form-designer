@@ -4,7 +4,7 @@ import { formDesignerStateKey, FORM_DESIGNER_INITIAL_STATE } from './state';
 import { createReducer } from '@ngrx/store';
 import { ons as commonOns } from './common/reducer';
 import { ons as visualEditingOns } from './visual-editing/reducer';
-import { ons as componentConfigurationOns } from './component-configuration/reducer';
+import { ons as componentConfigurationOns } from './component-metadata/reducer';
 
 const _reducer = createReducer(FORM_DESIGNER_INITIAL_STATE, ...[
   ...commonOns,
