@@ -268,7 +268,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/form-designer/src/test.ts",
+            "main": "projects/form-designer/test.ts",
             "tsConfig": "projects/form-designer/tsconfig.spec.json",
             "karmaConfig": "projects/form-designer/karma.conf.js"
           }

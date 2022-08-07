@@ -5,7 +5,7 @@ import * as fromAction from './action';
 
 const formDataReducer = createReducer<FormDataCenterState, Action>(DATA_CENTER_INITIAL_STATE, ...ons);
 
-fdescribe('Form Data Center Reducer', () => {
+describe('Form Data Center Reducer', () => {
 
     it('setFormData', () => {
         const action = fromAction.setFormData({ formKey: 'aaa', data: { name: 'Leon', age: 18 } });

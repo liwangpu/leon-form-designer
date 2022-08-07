@@ -1,1 +1,2 @@
-export const t = 1;
+// tokens
+export * from './tokens/component-id-generator';

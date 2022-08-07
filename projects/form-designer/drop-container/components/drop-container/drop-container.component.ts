@@ -75,10 +75,10 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
 
       },
       onAdd: async (evt: SortableJs.SortableEvent) => {
-        // console.log('add:', evt);
+        console.log('add:', evt);
         const dragEvt: DragEvent = (evt as any).originalEvent;
         const metadataStr = dragEvt.dataTransfer.getData('Text');
-        // console.log('metadataStr:', metadataStr);
+        console.log('metadataStr:', metadataStr);
         if (!metadataStr) { return; }
         let metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
         const des = await this.dynamicComponentRegistry.getComponentDescription(metadata.type);
@@ -103,15 +103,15 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
         // crt.style.height="200px";
         // document.body.appendChild(crt);
         // dragEvt.dataTransfer.setDragImage(crt, 0, 0);
-        console.log('start:', evt);
+        // console.log('start:', evt);
       },
       onEnd: async (evt: any) => {
         var itemEl = evt.item;  // dragged HTMLElement
-        console.log('end:', evt);
+        // console.log('end:', evt);
         // console.log('same:', evt.from === evt.to);
         const dragEvt: DragEvent = (evt as any).originalEvent;
         const metadataStr = dragEvt.dataTransfer.getData('Text');
-        console.log('end:',metadataStr);
+        // console.log('end:',metadataStr);
         if (!metadataStr) { return; }
         const metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
         if (evt.from !== evt.to) {
