@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Injector, Inject, ViewChild, ViewContainerRef, ChangeDetectorRef, OnDestroy, HostBinding, HostListener, Input } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Injector, Inject, ViewChild, ViewContainerRef, ChangeDetectorRef, OnDestroy, HostBinding, HostListener, Input, NgZone, ElementRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT_RENDERER, LazyService, UNIQUE_ID } from 'form-core';
 import { activeComponent, selectActiveComponentId, selectComponentMetadata } from 'form-designer/state-store';
@@ -23,8 +23,12 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
 
   @LazyService(DYNAMIC_COMPONENT_RENDERER)
   private readonly componentRenderer: DynamicComponentRenderer;
+  @LazyService(ElementRef)
+  private readonly el: ElementRef;
   @LazyService(ChangeDetectorRef)
   private readonly cdr: ChangeDetectorRef;
+  @LazyService(NgZone)
+  private readonly zone: NgZone;
   @LazyService(Store)
   private readonly store: Store;
   private subs = new SubSink();
@@ -38,12 +42,9 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    console.log('md:', this.metadata);
     this.subs.sink = this.store.select(selectComponentMetadata(this.metadata.id))
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe(metadata => {
-        // console.log('cfg:', cfg);
-        // this.metadata = cfg;
         this.renderComponent(metadata);
       });
     this.subs.sink = this.store.select(selectActiveComponentId)
@@ -51,7 +52,9 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
         this.actived = this.metadata.id === id;
         this.cdr.markForCheck();
       });
-    this.cdr.markForCheck();
+
+    // this.subs.sink=
+    const nel: HTMLElement = this.el.nativeElement;
   }
 
   @HostListener('click', ['$event'])

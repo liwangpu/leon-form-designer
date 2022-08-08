@@ -38,16 +38,18 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
   }),
   on(fromAction.moveComponent, (state: FormDesignerState, { id, parentId, index }) => {
     const componentTree = { ...state.componentTree };
-    const tree = state.componentTree[id];
+    const tree = { ...state.componentTree[id] };
     const originParent = { ...state.componentTree[tree.parentId] };
     originParent.body = originParent.body?.length ? [...originParent.body] : [];
     const oldIndex = originParent.body.findIndex(oid => oid === id);
     originParent.body.splice(oldIndex, 1);
-    componentTree[tree.parentId] = originParent;
+    componentTree[originParent.id] = originParent;
     const parentTree = { ...componentTree[parentId] };
     parentTree.body = parentTree.body?.length ? [...parentTree.body] : [];
     parentTree.body.splice(index, 0, id);
     componentTree[parentTree.id] = parentTree;
+    tree.parentId = parentId;
+    componentTree[tree.id] = tree;
     return { ...state, componentTree };
   })
 ];

@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, forwardRef, Injector, ChangeDetectorRef } from '@angular/core';
 import { ControlValueAccessor, FormArray, FormBuilder, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { LazyService } from 'form-core';
+import { ComponentIdGenerator, COMPONENT_ID_GENERATOR, LazyService } from 'form-core';
 import { filter } from 'rxjs/operators';
 import { SubSink } from 'subsink';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,6 +37,8 @@ export class TabsSettingComponent implements ControlValueAccessor, OnInit {
   private readonly fb: FormBuilder;
   @LazyService(ChangeDetectorRef)
   private readonly cdr: ChangeDetectorRef;
+  @LazyService(COMPONENT_ID_GENERATOR)
+  private readonly idGenerator: ComponentIdGenerator;
   private onChangeFn: (val: any) => any;
   private onTouchedFn: () => any;
   private subs = new SubSink();
@@ -72,12 +74,12 @@ export class TabsSettingComponent implements ControlValueAccessor, OnInit {
     this.cdr.markForCheck();
   }
 
-  addTab(item: any = null, emitEvent: boolean = true): void {
+  async addTab(item: any = null, emitEvent: boolean = true): Promise<void> {
     if (!emitEvent) {
       this.controlAdding = true;
     }
     const f: FormGroup = this.fb.group(item || {
-      id: uuidv4(),
+      id: await this.idGenerator.generate('tab'),
       type: 'tab',
       title: `页签 ${this.tabs.length + 1}`
     });

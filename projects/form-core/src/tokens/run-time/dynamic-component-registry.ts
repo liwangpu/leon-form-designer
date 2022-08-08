@@ -35,7 +35,7 @@ export interface ComponentDescription {
   fac: ComponentFactory<DynamicComponent>;
   group?: DynamicComponentGroup;
   icon?: string;
-  metadataProvider?: () => PartialComponentMetadata;
+  metadataProvider?: (partial: PartialComponentMetadata) => Promise<PartialComponentMetadata>;
 }
 
 export interface DynamicComponentRegistry {

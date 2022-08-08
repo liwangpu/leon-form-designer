@@ -4,6 +4,7 @@ import { ComponentTreeState } from './visual-editing/state';
 
 export interface FormDesignerState {
   activeComponentId?: string;
+  hoverComponentId?: string;
   componentMetadata: { [id: string]: DynamicComponentMetadata };
   componentTree: { [id: string]: ComponentTreeState };
 }

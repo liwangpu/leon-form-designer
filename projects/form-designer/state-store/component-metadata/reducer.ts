@@ -8,7 +8,6 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
   on(fromAction.setComponentMetadata, (state: FormDesignerState, { id, metadata }) => {
     const componentTree = { ...state.componentTree };
     const componentMetadata = { ...state.componentMetadata };
-    componentMetadata[id] = metadata;
     const maintainBodyComponent = (bodyMetadata: DynamicComponentMetadata, parentId: string) => {
       if (!componentTree[bodyMetadata.id]) {
         const ctree: ComponentTreeState = { id: bodyMetadata.id, type: bodyMetadata.type, parentId };
@@ -24,13 +23,14 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
         componentMetadata[bodyMetadata.id] = { ...bodyMetadata, body: [] };
       }
     };
-
     // 容器组件的body需要维护到tree上
     if (metadata.body?.length) {
       for (let cmd of metadata.body) {
         maintainBodyComponent(cmd, id);
       }
     }
+  
+    componentMetadata[id] = {...metadata,body:[]};
     return { ...state, componentMetadata, componentTree };
   })
 ];
