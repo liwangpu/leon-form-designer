@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DoCheck } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 const menuCollapseStatusKey = 'menuCollapseStatus';
@@ -9,7 +9,7 @@ const menuCollapseStatusKey = 'menuCollapseStatus';
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent {
+export class AppComponent implements DoCheck {
   public isCollapsed = false;
   public constructor(
     translate: TranslateService
@@ -23,6 +23,9 @@ export class AppComponent {
 
     // the lang to use, if the lang isn't available, it will use the current loader to get them
     translate.use('cn');
+  }
+  ngDoCheck(): void {
+    // console.log('check:',);
   }
 
   public ngOnInit(): void {

@@ -1,30 +1,31 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { DropContainer } from '../models/drop-container';
 
 @Injectable()
 export class DropContainerOpsatService {
 
-  containers$ = new Subject<string[]>();
-  activeContainer$ = new Subject<string>();
-  private containers = new Map<string, DropContainer>();
-  constructor() { }
+  private _componentHovering$ = new Subject<string>();
 
-  registryContainer(key: string, container: DropContainer): void {
-    this.containers.set(key, container);
-    this.publishContainers();
+  get componentHovering$(): Observable<string> {
+    return this._componentHovering$.asObservable();
+  }
+  private hoverPath: string[] = [];
+  publishComponentHover(id: string): void {
+    // this._componentHovering$.next(id);
+    this.hoverPath.push(id);
+    this._componentHovering$.next(this.getHoveringComponent());
   }
 
-  deRegistryContainer(key: string): void {
-    this.containers.delete(key);
-    this.publishContainers();
+
+  publishComponentUnHover(): void {
+    // this._componentHovering$.next(id);
+    this.hoverPath.pop();
+    this._componentHovering$.next(this.getHoveringComponent());
   }
 
-  activeContainer(key?: string): void {
-    this.activeContainer$.next(key);
-  }
-
-  private publishContainers() {
-    this.containers$.next([...this.containers.keys()]);
+  private getHoveringComponent(): string {
+    if (!this.hoverPath.length) { return null; }
+    return this.hoverPath[this.hoverPath.length - 1];
   }
 }

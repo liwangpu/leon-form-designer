@@ -5,17 +5,17 @@
   padding: 6px 12px;
   background-color: #fff;
 
-  &:hover {
-    // border-color: #205DD9;
+  &.hover {
+    border-color: #205DD9;
   }
 
   &.actived {
-    border-style: solid;
-    border-color: #205DD9;
+    border-style: solid !important;
+    border-color: #205DD9 !important;
 
-    &>.tools {
-      display: flex;
-    }
+    // &>.tools {
+    //   display: flex;
+    // }
   }
 
   &>.tools {

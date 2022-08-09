@@ -1,10 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy, Injector, Inject, ViewChild, ViewContainerRef, ChangeDetectorRef, OnDestroy, HostBinding, HostListener, Input, NgZone, ElementRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Injector, Inject, ViewChild, ViewContainerRef, ChangeDetectorRef, OnDestroy, HostBinding, HostListener, Input, NgZone, ElementRef, Renderer2 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT_RENDERER, LazyService, UNIQUE_ID } from 'form-core';
 import { activeComponent, selectActiveComponentId, selectComponentMetadata } from 'form-designer/state-store';
 import * as _ from 'lodash';
+import { Subject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { SubSink } from 'subsink';
+import { DropContainerOpsatService } from '../../services/drop-container-opsat.service';
 
 @Component({
   selector: 'qflow-form-designer-component-design-wrapper',
@@ -29,8 +31,14 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
   private readonly cdr: ChangeDetectorRef;
   @LazyService(NgZone)
   private readonly zone: NgZone;
+  @LazyService(Renderer2)
+  private readonly renderer: Renderer2;
+  @LazyService(DropContainerOpsatService, null)
+  private readonly opsat: DropContainerOpsatService;
   @LazyService(Store)
   private readonly store: Store;
+  private mouseEnterListenFn: (e: MouseEvent) => void;
+  private mouseLeaveListenFn: (e: MouseEvent) => void;
   private subs = new SubSink();
   constructor(
     protected injector: Injector
@@ -38,6 +46,13 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    const nel: HTMLElement = this.el.nativeElement;
+    if (this.mouseEnterListenFn) {
+      nel.removeEventListener('mouseenter', this.mouseEnterListenFn);
+    }
+    if (this.mouseLeaveListenFn) {
+      nel.removeEventListener('mouseleave', this.mouseLeaveListenFn);
+    }
     this.subs.unsubscribe();
   }
 
@@ -53,8 +68,28 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       });
 
-    // this.subs.sink=
-    const nel: HTMLElement = this.el.nativeElement;
+    this.zone.runOutsideAngular(() => {
+      if (this.opsat) {
+        const nel: HTMLElement = this.el.nativeElement;
+        this.mouseEnterListenFn = () => {
+          this.opsat.publishComponentHover(this.metadata.id);
+        };
+        this.mouseLeaveListenFn = () => {
+          this.opsat.publishComponentUnHover();
+        };
+        nel.addEventListener('mouseenter', this.mouseEnterListenFn);
+        nel.addEventListener('mouseleave', this.mouseLeaveListenFn);
+
+        this.subs.sink = this.opsat.componentHovering$
+          .subscribe(id => {
+            if (this.metadata.id === id) {
+              this.renderer.addClass(nel, 'hover');
+            } else {
+              this.renderer.removeClass(nel, 'hover');
+            }
+          });
+      }
+    });
   }
 
   @HostListener('click', ['$event'])
@@ -65,6 +100,7 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
 
   private async renderComponent(metadata: DynamicComponentMetadata): Promise<void> {
     if (this.container.length) { this.container.clear(); }
+    if (!metadata?.type) { return; }
     const ref = await this.componentRenderer.render(this.injector, metadata, this.container);
     this.cdr.markForCheck();
   }

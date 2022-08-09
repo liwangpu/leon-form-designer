@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Injector, ViewContainerRef, ComponentRef, ComponentFactoryResolver, Renderer2 } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostBinding, ElementRef, ViewChild, ChangeDetectorRef, Injector, ViewContainerRef, ComponentRef, ComponentFactoryResolver, Renderer2, NgZone } from '@angular/core';
 import * as _ from 'lodash';
 import { DropContainerOpsatService } from '../../services/drop-container-opsat.service';
 import { SubSink } from 'subsink';
@@ -64,23 +64,25 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
       easing: "cubic-bezier(1, 0, 0, 1)",
       setData: async (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl: HTMLElement) => {
         const id = dragEl.id;
+        const containers = dragEl.querySelectorAll('div.drop-container');
+        containers.forEach(e => {
+          this.renderer.addClass(e, 'hidden');
+        });
+        console.log('containers:', containers);
         const metadata = await this.store.select(selectComponentMetadata(id)).pipe(first()).toPromise();
         dataTransfer.setData('Text', JSON.stringify({ id, type: metadata.type }));
-
-        const crt = document.createElement('div');
-        crt.style.backgroundColor = "black";
-        crt.style.width = "200px";
-        crt.style.height = "200px";
-        // crt.style.backgroundColor="linear-gradient(90deg, rgba(2,0,36,0) 0%, rgba(9,9,121,1) 100%, rgba(0,212,255,1) 100%) !important";
-        // document.body.appendChild(crt);
-        dataTransfer.setDragImage(crt, 0, 0);
-
+        // console.log('dragEl:', dragEl);
+        // const crt = document.createElement('div');
+        // crt.style.backgroundColor = "black";
+        // crt.style.width = "200px";
+        // crt.style.height = "200px";
+        // // document.body.appendChild(crt);
+        // dataTransfer.setDragImage(crt, 0, 0);
       },
       onAdd: async (evt: SortableJs.SortableEvent) => {
-        // console.log('add:', evt);
+        console.log('add:',evt);
         const dragEvt: DragEvent = (evt as any).originalEvent;
         const metadataStr = dragEvt.dataTransfer.getData('Text');
-        // console.log('metadataStr:', metadataStr);
         if (!metadataStr) { return; }
         let metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
         if (metadata.id) { return; }
@@ -97,7 +99,11 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
       },
       onEnd: async (evt: SortableJs.SortableEvent) => {
         var itemEl = evt.item;  // dragged HTMLElement
-        // console.log('end:', evt);
+        console.log('end:', evt);
+        const containers = evt.item.querySelectorAll('div.drop-container');
+        containers.forEach(e => {
+          this.renderer.removeClass(e, 'hidden');
+        });
         const containerId = evt.to.getAttribute('container-id');
         if (!containerId) { return; }
         const dragEvt: DragEvent = (evt as any).originalEvent;
@@ -106,7 +112,10 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
         const metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
         // console.log('end:', metadata);
         if (evt.from !== evt.to) {
-          itemEl.parentElement.removeChild(itemEl);
+          // itemEl.parentElement.removeChild(itemEl);
+          console.log('remove from:', evt.from);
+          console.log('remove to:', evt.to);
+          console.log('remove item:', evt.item);
         }
         this.store.dispatch(moveComponent({ id: metadata.id, parentId: containerId, index: evt.newIndex, source: DropContainerComponent.name }));
       }
@@ -115,6 +124,7 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
     this.subs.sink = this.store.select(selectFirstLevelBodyComponents(this.metadata.id))
       .subscribe(async components => {
         this.components = components;
+        console.log(`container ${this.metadata.id}`, components);
         this.cdr.markForCheck();
       });
   }
@@ -123,51 +133,4 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
     return index;
   }
 
-  private generate(): Sortable {
-    return SortableJs.create(this.dropContainer.nativeElement, {
-      group: {
-        name: 'form-designer'
-      },
-      setData: async (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl: HTMLElement) => {
-        const id = dragEl.id;
-        const metadata = await this.store.select(selectComponentMetadata(id)).pipe(first()).toPromise();
-        dataTransfer.setData('Text', JSON.stringify({ id, type: metadata.type }));
-        console.log('set data:', { id, type: metadata.type });
-      },
-      onAdd: async (evt: SortableJs.SortableEvent) => {
-        console.log('add:', evt);
-        const dragEvt: DragEvent = (evt as any).originalEvent;
-        const metadataStr = dragEvt.dataTransfer.getData('Text');
-        // console.log('metadataStr:', metadataStr);l
-        if (!metadataStr) { return; }
-        let metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
-        const des = await this.dynamicComponentRegistry.getComponentDescription(metadata.type);
-        if (typeof des.metadataProvider === 'function') {
-          const partialMetadata = await des.metadataProvider(metadata);
-          metadata = { ...metadata, ...partialMetadata };
-        }
-        this.store.dispatch(addNewComponent({ metadata: { ...metadata, id: uuidv4() }, parentId: this.metadata.id, index: evt.newIndex, source: DropContainerComponent.name }));
-      },
-      onEnd: (evt: any) => {
-        var itemEl = evt.item;  // dragged HTMLElement
-        // console.log('end:', evt);
-        const dragEvt: DragEvent = (evt as any).originalEvent;
-        const metadataStr = dragEvt.dataTransfer.getData('Text');
-        console.log('end:', metadataStr);
-        if (!metadataStr) { return; }
-        const metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
-        // console.log('change metadataStr:', metadataStr);
-        itemEl.parentElement.removeChild(itemEl);
-        this.store.dispatch(moveComponent({ id: metadata.id, parentId: this.metadata.id, index: evt.newIndex, source: DropContainerComponent.name }));
-      },
-      onChange(/**Event*/evt): void {
-        // evt.newIndex // most likely why this event is used is to get the dragging element's current index
-        // // same properties as onEnd
-        // console.log('change evt:', evt);
-        // const dragEvt: DragEvent = (evt as any).originalEvent;
-        // const metadataStr = dragEvt.dataTransfer.getData('Text');
-        // console.log('change metadataStr:', metadataStr);
-      }
-    });
-  }
 }

@@ -35,8 +35,14 @@ qflow-form-designer-component-setting-panel {
 qflow-form-designer-page-presentation {
   qflow-form-designer-drop-container {
     .drop-container {
+
+      &.hidden {
+        display: none !important;
+      }
+
       &>.sortable-ghost {
-        // margin: 12px 0;
+        margin:0 0 12px;
+        // background-color: orange !important;
       }
 
       .drop-item {
@@ -44,9 +50,7 @@ qflow-form-designer-page-presentation {
           margin-bottom: 12px;
         }
 
-        &.sortable-ghost{
- 
-        }
+        &.sortable-ghost {}
       }
     }
   }

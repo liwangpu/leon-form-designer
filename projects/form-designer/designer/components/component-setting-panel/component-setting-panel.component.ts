@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ViewContainerRef, OnDestroy, Injector, ChangeDetectorRef, ComponentRef, Renderer2 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ComponentDesignPanel, ComponentDesignPanelRegistry, COMPONENT_DESIGN_CONFIGURATION, COMPONENT_DESIGN_PANEL_REGISTRY, LazyService } from 'form-core';
-import { selectActiveComponentMetadata, selectActiveComponentId, setComponentMetadata } from 'form-designer/state-store';
+import { selectActiveComponentMetadata, selectActiveComponentId, setComponentMetadata, selectAllComponentIds } from 'form-designer/state-store';
 import { Subject } from 'rxjs';
 import { debounceTime, filter } from 'rxjs/operators';
 import { SubSink } from 'subsink';
@@ -35,14 +35,23 @@ export class ComponentSettingPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.subs.sink = combineLatest([
-    //   this.store.select(selectAllComponentIds),
-    //   this.store.select(selectActiveComponentId)
-    // ]).subscribe(([componentIds, activedId]) => {
-    //   console.log('activeId:', activedId);
-    //   console.log('componentIds:', componentIds);
-    //   this.cdr.markForCheck();
-    // });
+    this.subs.sink = this.store.select(selectAllComponentIds)
+      .subscribe(ids => {
+        const mids = new Set(ids);
+        let deleted = false;
+        this.panelMap.forEach((ref, id) => {
+          if (!mids.has(id)) {
+            const panelRef = this.panelMap.get(id);
+            panelRef.destroy();
+            this.panelMap.delete(id);
+            deleted = true;
+          }
+        });
+        if (deleted) {
+          this.cdr.markForCheck();
+        }
+      });
+
     // TODO: 补充销毁
     this.subs.sink = this.store.select(selectActiveComponentMetadata)
       .pipe(filter(cfg => cfg ? true : false))
