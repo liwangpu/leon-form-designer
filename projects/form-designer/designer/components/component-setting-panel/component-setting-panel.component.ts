@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ViewContainerRef, OnDestroy, Injector, ChangeDetectorRef, ComponentRef, Renderer2 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ComponentDesignPanel, ComponentDesignPanelRegistry, COMPONENT_DESIGN_CONFIGURATION, COMPONENT_DESIGN_PANEL_REGISTRY, LazyService } from 'form-core';
+import { ComponentDesignPanel, ComponentDesignPanelRegistry, COMPONENT_DESIGN_CONFIGURATION, COMPONENT_DESIGN_PANEL_REGISTRY, DesignInteractionOpsat, DESIGN_INTERACTION_OPSAT, INTERACTION_ACTION_EXECUTOR, INTERACTION_EVENT_OBSERVER, LazyService } from 'form-core';
 import { selectActiveComponentMetadata, selectActiveComponentId, setComponentMetadata, selectAllComponentIds } from 'form-designer/state-store';
 import { Subject } from 'rxjs';
 import { debounceTime, filter } from 'rxjs/operators';
@@ -20,6 +20,8 @@ export class ComponentSettingPanelComponent implements OnInit, OnDestroy {
   private readonly cdr: ChangeDetectorRef;
   @LazyService(COMPONENT_DESIGN_PANEL_REGISTRY)
   private readonly designPanelRegistry: ComponentDesignPanelRegistry;
+  @LazyService(DESIGN_INTERACTION_OPSAT)
+  private readonly interactionOpsat: DesignInteractionOpsat;
   @LazyService(Store)
   private readonly store: Store;
   @LazyService(Renderer2)
@@ -61,9 +63,14 @@ export class ComponentSettingPanelComponent implements OnInit, OnDestroy {
         if (!this.panelMap.has(cfg.id)) {
           const des = await this.designPanelRegistry.getComponentDescription(cfg.type);
           if (!des) { return; }
+          const actionExecutor = (actionName: string, data?: any) => {
+            this.interactionOpsat.execAction({ componentId: cfg.id, actionName, data });
+          };
           const ij = Injector.create({
             providers: [
-              { provide: COMPONENT_DESIGN_CONFIGURATION, useValue: cfg }
+              { provide: COMPONENT_DESIGN_CONFIGURATION, useValue: cfg },
+              { provide: INTERACTION_EVENT_OBSERVER, useValue: this.interactionOpsat.event$.pipe(filter(e => e.componentId === cfg.id)) },
+              { provide: INTERACTION_ACTION_EXECUTOR, useValue: actionExecutor },
             ],
             parent: this.injector
           });

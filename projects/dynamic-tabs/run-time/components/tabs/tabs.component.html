@@ -1,5 +1,6 @@
-<p class="my-title">{{id}}</p>
-<nz-tabset class="tabset">
+<!-- <p class="my-title">{{id}}</p> -->
+<nz-tabset class="tabset" [nzSelectedIndex]="selectedTabIndex"
+  (nzSelectedIndexChange)="onSelectedTabIndexChange($event)">
   <nz-tab *ngFor="let tab of tabs;trackBy:trackById" [nzTitle]="tab.title">
     <ng-template nz-tab>
       <qflow-tab-wrapper [tab]="tab"></qflow-tab-wrapper>

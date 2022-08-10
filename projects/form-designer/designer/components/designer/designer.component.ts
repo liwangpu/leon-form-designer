@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, Injector, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { LazyService } from 'form-core';
+import { DESIGN_INTERACTION_OPSAT, LazyService } from 'form-core';
+import { DesignInteractionOpsatService } from '../../services/design-interaction-opsat.service';
 import { DropContainerOpsatService } from 'form-designer/drop-container';
 import { FORM_DESIGNER_INITIAL_STATE, selectFormDesignerState, setDesignerState } from 'form-designer/state-store';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -14,7 +15,8 @@ const designerDraft = 'formDesignerDraf';
   styleUrls: ['./designer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
-    DropContainerOpsatService
+    DropContainerOpsatService,
+    { provide: DESIGN_INTERACTION_OPSAT, useClass: DesignInteractionOpsatService }
   ]
 })
 export class DesignerComponent implements OnInit, OnDestroy {

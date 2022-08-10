@@ -41,7 +41,7 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
   private readonly idGenerator: ComponentIdGenerator;
   @LazyService(DYNAMIC_COMPONENT_REGISTRY)
   private readonly dynamicComponentRegistry: DynamicComponentRegistry;
-  // private components = new Map<string, ComponentRef<ComponentDesignWrapperComponent>>();
+  private sortable: Sortable;
 
   constructor(
     injector: Injector
@@ -54,13 +54,35 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
   }
 
   ngOnInit(): void {
-    // console.log('e:',this.dropContainer.nativeElement);
-    SortableJs.create(this.dropContainer.nativeElement, {
+    this.subs.sink = this.store.select(selectFirstLevelBodyComponents(this.metadata.id))
+      .subscribe(async components => {
+        this.components = components;
+        if(this.metadata.id==='page'){
+          console.log(`container ${this.metadata.id}`, components);
+        }
+        // console.log(`container ${this.metadata.id}`, components);
+        this.generateSortable();
+        this.cdr.markForCheck();
+      });
+  }
+
+  trackById(index: number, it: DynamicComponentMetadata): any {
+    return it.id;
+  }
+
+  private generateSortable(): void {
+    if (this.sortable) {
+      this.sortable.destroy();
+    }
+    this.sortable = SortableJs.create(this.dropContainer.nativeElement, {
       group: {
         name: 'form-designer'
       },
       // swapThreshold: 0,
-      fallbackOnBody: true,
+      // fallbackOnBody: true,
+      // draggable: ".drop-item",
+      // dragClass: "drop-item",
+      dragoverBubble: false,
       easing: "cubic-bezier(1, 0, 0, 1)",
       setData: async (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl: HTMLElement) => {
         const id = dragEl.id;
@@ -68,19 +90,11 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
         containers.forEach(e => {
           this.renderer.addClass(e, 'hidden');
         });
-        console.log('containers:', containers);
         const metadata = await this.store.select(selectComponentMetadata(id)).pipe(first()).toPromise();
         dataTransfer.setData('Text', JSON.stringify({ id, type: metadata.type }));
-        // console.log('dragEl:', dragEl);
-        // const crt = document.createElement('div');
-        // crt.style.backgroundColor = "black";
-        // crt.style.width = "200px";
-        // crt.style.height = "200px";
-        // // document.body.appendChild(crt);
-        // dataTransfer.setDragImage(crt, 0, 0);
       },
       onAdd: async (evt: SortableJs.SortableEvent) => {
-        console.log('add:',evt);
+        // console.log('add:', evt);
         const dragEvt: DragEvent = (evt as any).originalEvent;
         const metadataStr = dragEvt.dataTransfer.getData('Text');
         if (!metadataStr) { return; }
@@ -99,7 +113,7 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
       },
       onEnd: async (evt: SortableJs.SortableEvent) => {
         var itemEl = evt.item;  // dragged HTMLElement
-        console.log('end:', evt);
+        // console.log('end:', evt);
         const containers = evt.item.querySelectorAll('div.drop-container');
         containers.forEach(e => {
           this.renderer.removeClass(e, 'hidden');
@@ -110,27 +124,12 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
         const metadataStr = dragEvt.dataTransfer.getData('Text');
         if (!metadataStr) { return; }
         const metadata: DynamicComponentMetadata = JSON.parse(metadataStr);
-        // console.log('end:', metadata);
         if (evt.from !== evt.to) {
-          // itemEl.parentElement.removeChild(itemEl);
-          console.log('remove from:', evt.from);
-          console.log('remove to:', evt.to);
-          console.log('remove item:', evt.item);
+          itemEl.parentElement.removeChild(itemEl);
         }
         this.store.dispatch(moveComponent({ id: metadata.id, parentId: containerId, index: evt.newIndex, source: DropContainerComponent.name }));
       }
     });
-
-    this.subs.sink = this.store.select(selectFirstLevelBodyComponents(this.metadata.id))
-      .subscribe(async components => {
-        this.components = components;
-        console.log(`container ${this.metadata.id}`, components);
-        this.cdr.markForCheck();
-      });
-  }
-
-  trackById(index: number, it: DynamicComponentMetadata): any {
-    return index;
   }
 
 }

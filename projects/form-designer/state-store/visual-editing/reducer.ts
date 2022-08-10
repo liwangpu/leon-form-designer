@@ -6,6 +6,7 @@ import { ComponentTreeState } from './state';
 
 export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string, Creator<any[], object>>[]>[] = [
   on(fromAction.addNewComponent, (state: FormDesignerState, { metadata, parentId, index }) => {
+    console.log('add:',metadata);
     const componentTree = { ...state.componentTree };
     if (componentTree[metadata.id]) { return state; }
     const componentMetadata = { ...state.componentMetadata };
@@ -30,7 +31,7 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
       }
       tree.body = metadata.body.map(c => c.id);
     }
-    return { ...state, componentTree, componentMetadata, activeComponentId: metadata.id };
+    return { ...state, componentTree, componentMetadata, activeComponentId: state.activeComponentId || metadata.id };
   }),
   on(fromAction.activeComponent, (state: FormDesignerState, { id }) => {
     if (state.activeComponentId === id) { return state; }

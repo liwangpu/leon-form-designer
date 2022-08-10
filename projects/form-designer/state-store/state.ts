@@ -12,7 +12,8 @@ export const FORM_DESIGNER_INITIAL_STATE: FormDesignerState = {
   componentMetadata: {},
   componentTree: {
     'page': { id: 'page', type: 'page' }
-  }
+  },
+  activeComponentId: null
 }
 
 export const formDesignerStateKey: string = 'formDesigner';

@@ -1,7 +1,7 @@
 <form [formGroup]="form">
   <div class="tabs-setting" formArrayName="tabs">
     <ng-container *ngFor="let fg of tabs?.controls; let i = index">
-      <div class="item" [formGroupName]="i">
+      <div class="item" [class.actived]="activedTabId===fg.value?.id" [formGroupName]="i" (click)="activeTab(fg.value?.id)">
         <p class="title">{{fg?.value?.title}}</p>
       </div>
     </ng-container>

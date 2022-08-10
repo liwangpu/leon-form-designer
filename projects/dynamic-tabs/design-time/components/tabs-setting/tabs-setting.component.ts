@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, forwardRef, Injector, ChangeDetectorRef } from '@angular/core';
 import { ControlValueAccessor, FormArray, FormBuilder, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { ComponentIdGenerator, COMPONENT_ID_GENERATOR, LazyService } from 'form-core';
-import { filter } from 'rxjs/operators';
+import { ComponentIdGenerator, COMPONENT_ID_GENERATOR, LazyService, COMPONENT_DESIGN_CONFIGURATION, ComponentDesignConfiguration, INTERACTION_EVENT_OBSERVER, INTERACTION_ACTION_EXECUTOR } from 'form-core';
+import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { SubSink } from 'subsink';
-import { v4 as uuidv4 } from 'uuid';
 
 interface TabSetting {
   id: string;
@@ -32,7 +32,14 @@ export class TabsSettingComponent implements ControlValueAccessor, OnInit {
 
   disabled: boolean;
   form: FormGroup;
+  activedTabId?: string;
   private controlAdding: boolean;
+  @LazyService(COMPONENT_DESIGN_CONFIGURATION)
+  public readonly configuration: ComponentDesignConfiguration;
+  @LazyService(INTERACTION_EVENT_OBSERVER, null)
+  private readonly eventObserver: Observable<{ eventName: string, data?: any }>;
+  @LazyService(INTERACTION_ACTION_EXECUTOR, null)
+  private readonly actionExecutor: (actionName: string, data?: any) => void;
   @LazyService(FormBuilder)
   private readonly fb: FormBuilder;
   @LazyService(ChangeDetectorRef)
@@ -59,6 +66,7 @@ export class TabsSettingComponent implements ControlValueAccessor, OnInit {
   }
 
   ngOnInit(): void {
+    // console.log('interactionOpsat:', this.interactionOpsat);
     this.subs.sink = this.form.valueChanges
       .pipe(filter(() => !this.controlAdding))
       .subscribe((val: FormValue) => {
@@ -67,14 +75,25 @@ export class TabsSettingComponent implements ControlValueAccessor, OnInit {
           this.onChangeFn(val.tabs);
         }
       });
+
+    if (this.eventObserver) {
+      this.eventObserver
+        .pipe(filter(e => e.eventName === 'tabChange'))
+        .pipe(map(e => e.data))
+        .subscribe(tabId => {
+          this.activedTabId = tabId;
+          this.cdr.markForCheck();
+        });
+    }
   }
 
   writeValue(obj: TabSetting[] = []): void {
     obj?.forEach(it => this.addTab(it, false));
+    this.activedTabId = obj?.length ? obj[0].id : null;
     this.cdr.markForCheck();
   }
 
-  async addTab(item: any = null, emitEvent: boolean = true): Promise<void> {
+  async addTab(item: TabSetting = null, emitEvent: boolean = true): Promise<void> {
     if (!emitEvent) {
       this.controlAdding = true;
     }
@@ -87,8 +106,6 @@ export class TabsSettingComponent implements ControlValueAccessor, OnInit {
     if (!emitEvent) {
       this.controlAdding = false;
     }
-    // console.log('title:', this.tabs.controls);
-    // console.log('tabs:', this.tabs.length);
   }
 
   registerOnChange(fn: any): void {
@@ -101,6 +118,13 @@ export class TabsSettingComponent implements ControlValueAccessor, OnInit {
 
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+  }
+
+  activeTab(tabId: string) {
+    this.activedTabId = tabId;
+    if (this.actionExecutor) {
+      this.actionExecutor('activeTab', tabId);
+    }
   }
 
 }

@@ -1,10 +1,10 @@
 import { Component, OnInit, ChangeDetectionStrategy, Injector, Inject, ViewChild, ViewContainerRef, ChangeDetectorRef, OnDestroy, HostBinding, HostListener, Input, NgZone, ElementRef, Renderer2 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT_RENDERER, LazyService, UNIQUE_ID } from 'form-core';
+import { DesignInteractionOpsat, DESIGN_INTERACTION_OPSAT, DynamicComponentMetadata, DynamicComponentRenderer, DYNAMIC_COMPONENT_RENDERER, LazyService, UNIQUE_ID } from 'form-core';
 import { activeComponent, selectActiveComponentId, selectComponentMetadata } from 'form-designer/state-store';
 import * as _ from 'lodash';
-import { Subject } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { SubSink } from 'subsink';
 import { DropContainerOpsatService } from '../../services/drop-container-opsat.service';
 
@@ -25,6 +25,10 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
 
   @LazyService(DYNAMIC_COMPONENT_RENDERER)
   private readonly componentRenderer: DynamicComponentRenderer;
+  @LazyService(DESIGN_INTERACTION_OPSAT)
+  private readonly interactionOpsat: DesignInteractionOpsat;
+  // @LazyService(INTERACTION_EVENT_PUBLISHER, null)
+  // private readonly eventPublisher: (eventName: string, data?: any) => void;
   @LazyService(ElementRef)
   private readonly el: ElementRef;
   @LazyService(ChangeDetectorRef)
@@ -46,6 +50,7 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    console.log('des:',);
     const nel: HTMLElement = this.el.nativeElement;
     if (this.mouseEnterListenFn) {
       nel.removeEventListener('mouseenter', this.mouseEnterListenFn);
@@ -101,7 +106,28 @@ export class ComponentDesignWrapperComponent implements OnInit, OnDestroy {
   private async renderComponent(metadata: DynamicComponentMetadata): Promise<void> {
     if (this.container.length) { this.container.clear(); }
     if (!metadata?.type) { return; }
+
     const ref = await this.componentRenderer.render(this.injector, metadata, this.container);
+    const { events, actions } = ref.instance['getMetaDataDescription']();
+    const subs = new SubSink();
+    events.forEach(e => {
+      if (this.interactionOpsat) {
+        subs.sink = (ref.instance[e.key] as Observable<any>)
+          .subscribe(data => {
+            this.interactionOpsat.publishEvent({ componentId: metadata.id, eventName: e.key, data });
+          });
+      }
+    });
+
+    this.interactionOpsat.action$
+      .pipe(filter(act => act.componentId === metadata.id))
+      .subscribe(act => {
+        ref.instance[act.actionName](act.data);
+      });
+    // console.log('events:', events);
+    ref.onDestroy(() => {
+      subs.unsubscribe();
+    });
     this.cdr.markForCheck();
   }
 }
