@@ -57,9 +57,9 @@ export class DropContainerComponent extends DynamicComponent implements OnInit, 
     this.subs.sink = this.store.select(selectFirstLevelBodyComponents(this.metadata.id))
       .subscribe(async components => {
         this.components = components;
-        if(this.metadata.id==='page'){
-          console.log(`container ${this.metadata.id}`, components);
-        }
+        // if(this.metadata.id==='page'){
+        //   console.log(`container ${this.metadata.id}`, components);
+        // }
         // console.log(`container ${this.metadata.id}`, components);
         this.generateSortable();
         this.cdr.markForCheck();

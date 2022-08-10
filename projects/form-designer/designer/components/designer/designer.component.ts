@@ -36,6 +36,7 @@ export class DesignerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
+    this.store.dispatch(setDesignerState({ state: FORM_DESIGNER_INITIAL_STATE, source: DesignerComponent.name }));
   }
 
   ngOnInit(): void {

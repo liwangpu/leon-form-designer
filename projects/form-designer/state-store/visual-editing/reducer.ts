@@ -1,12 +1,10 @@
 import { ActionCreator, Creator, on, ReducerTypes } from '@ngrx/store';
-import { DynamicComponentMetadata } from 'form-core';
 import { FormDesignerState } from '../state';
 import * as fromAction from './action';
 import { ComponentTreeState } from './state';
 
 export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string, Creator<any[], object>>[]>[] = [
   on(fromAction.addNewComponent, (state: FormDesignerState, { metadata, parentId, index }) => {
-    console.log('add:',metadata);
     const componentTree = { ...state.componentTree };
     if (componentTree[metadata.id]) { return state; }
     const componentMetadata = { ...state.componentMetadata };
@@ -17,8 +15,6 @@ export const ons: ReducerTypes<FormDesignerState, readonly ActionCreator<string,
     parentTree.body = parentTree.body?.length ? [...parentTree.body] : [];
     parentTree.body.push(metadata.id);
     componentTree[parentId] = parentTree;
-    // console.log('parent tree:', parentTree);
-    // console.log('componentTree:', componentTree);
     componentMetadata[metadata.id] = { ...metadata, body: [] };
     // 容器组件的body需要维护到tree上
     if (metadata.body?.length) {
